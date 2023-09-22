@@ -18,7 +18,7 @@ npm install
 ```
 
 <p>3. Run frontend</p>
-Go to root directory (APPA-!S442-G1-T7)
+Go to directory (APPA-IS442-G1-T7)
 
 ```
 npm run frontend
