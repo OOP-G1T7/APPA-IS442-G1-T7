@@ -1,25 +1,53 @@
 # APPA 
 IS442 G1-T7
 
-### Installation Steps:
+## Installation Steps:
 
-<p>1. Frontend Setup</p>
+#### 1. Frontend Setup
 
 ```
 cd frontend
 npm install
 ```
 
-<p>2. Backend Setup</p>
+### With Maven extension in IDE:
 
-```
-cd backend
-npm install
-```
+#### 2. Backend Setup
 
-<p>3. Run frontend</p>
-Go to directory (APPA-IS442-G1-T7)
+> If below steps display an error, run `cd to backend\analytics-app` before starting the steps.
 
+<ol>
+    <li>Open Maven hierarchy</li>
+    <li>Right click on analytics-app</li>
+    <li>Hover over "Run Maven Commands..."</li>
+    <li>Click on "clean"</li>
+    <li>Repeat 2-4. Click on "install"</li>
+</ol>
+
+
+
+#### 3. Run Project
+**Frontend**
 ```
+// Go to root directory (APPA-IS442-G1-T7)
 npm run frontend
+```
+
+**Backend**
+1. Navigate to the file: src\main\java\com\example\analyticsapp\AnalyticsAppApplication.java
+2. Run code
+
+### With MVN in OS:
+#### 2. Backend Setup
+
+```
+// Go to root directory (APPA-IS442-G1-T7)
+mvn clean install
+```
+
+#### 3. Run Project
+
+```
+// Go to root directory (APPA-IS442-G1-T7)
+npm run app
 ```
