@@ -1,7 +1,6 @@
-import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import logo from './logo.svg';
+import Portfolio from './pages/Portfolio';
 
 // Pages
 import Home from './pages/Home';
@@ -17,6 +16,7 @@ function App() {
           <Route index element={<SignIn/>} />
           <Route path="/SignIn" element={<SignIn/>} />
           <Route path="/Home" element={<Home/>} />
+          <Route path="/Portfolio" element={<Portfolio/>} />
           {/* If a non-existent route is defined, redirect to */}
           <Route path="*" element={<NoPage/>} />
         </Routes>

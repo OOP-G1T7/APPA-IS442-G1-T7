@@ -1,4 +1,4 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
     palette: {
         mode: 'light',
@@ -13,12 +13,7 @@ const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: 'Inter',
+        fontFamily: `Inter`,
     },
 });
-export default function App() {
-    return (
-        <ThemeProvider theme={theme}>
-        </ThemeProvider>
-    );
-}
+export default theme;
