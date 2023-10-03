@@ -1,6 +1,7 @@
 {
     "scripts": {
         "frontend": "cd frontend && npm start",
-        "backend": ""
+        "backend": "cd backend\\analytics-app && mvn spring-boot:run",
+        "app": "concurrently \"npm run frontend\" \"npm run backend\""
     }
 }
