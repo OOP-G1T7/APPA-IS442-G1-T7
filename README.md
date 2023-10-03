@@ -42,6 +42,9 @@ npm run frontend
 
 ```
 // Go to root directory (APPA-IS442-G1-T7)
+// If there's an error, run below 
+cd backend\analytics-app
+
 mvn clean install
 ```
 
