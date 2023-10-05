@@ -18,6 +18,6 @@ public interface UserService {
      *
      * @return A user object.
      */
-    UserEntity getOneUser(String username);
+    UserEntity getOneUser(int userId);
 
 }

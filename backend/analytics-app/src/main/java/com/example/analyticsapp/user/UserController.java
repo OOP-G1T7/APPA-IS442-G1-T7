@@ -40,9 +40,9 @@ public class UserController {
      *
      * @return An UserEntity object.
      */
-    @GetMapping("/{username}")
-    public UserEntity getOneUser(@PathVariable String username) {
-        UserEntity result = userService.getOneUser(username);
+    @GetMapping("/{userId}")
+    public UserEntity getOneUser(@PathVariable int userId) {
+        UserEntity result = userService.getOneUser(userId);
         return result;
     }
 

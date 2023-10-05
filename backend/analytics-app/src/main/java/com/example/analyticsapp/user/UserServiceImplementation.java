@@ -21,8 +21,8 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public UserEntity getOneUser(String username) {
-        UserEntity result = userRepository.getOneUser(username);
+    public UserEntity getOneUser(int userId) {
+        UserEntity result = userRepository.getOneUser(userId);
         return result;
     }
 

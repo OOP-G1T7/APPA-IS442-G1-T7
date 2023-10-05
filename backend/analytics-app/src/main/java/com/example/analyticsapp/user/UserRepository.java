@@ -21,12 +21,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     ArrayList<UserEntity> getAllUsers();
 
     /**
-     * Find all user by their username.
+     * Find all user by their userId.
      *
-     * @param username The username to search for.
+     * @param userId The username to search for.
      * @return The user if found, or null if not found.
      */
-    @Query(value = "SELECT * FROM user where username = ?", nativeQuery = true)
-    UserEntity getOneUser(String username);
+    @Query(value = "SELECT * FROM user where user_id = ?", nativeQuery = true)
+    UserEntity getOneUser(int userId);
 
 }
