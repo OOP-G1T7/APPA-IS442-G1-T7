@@ -1,5 +1,12 @@
 package com.example.analyticsapp.common;
 
+<<<<<<< Updated upstream
+=======
+/**
+ * Common class for all API responses.
+ * This class allows the API responses to be standardised.
+ */
+>>>>>>> Stashed changes
 public class ApiResponse<T> {
     private int statusCode;
     private String message;
