@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Portfolio from './pages/Portfolio';
+import PortfolioCreation from './pages/PortfolioCreation';
 
 // Pages
 import Home from './pages/Home';
@@ -13,12 +14,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Default Route */}
-          <Route index element={<SignIn/>} />
-          <Route path="/SignIn" element={<SignIn/>} />
-          <Route path="/Home" element={<Home/>} />
-          <Route path="/Portfolio" element={<Portfolio/>} />
+          <Route index element={<SignIn />} />
+          <Route path="/SignIn" element={<SignIn />} />
+          <Route path="/Home" element={<Home />} />
+          <Route path="/Portfolio" element={<Portfolio />} />
+          <Route path="/PortfolioCreation" element={<PortfolioCreation />} />
           {/* If a non-existent route is defined, redirect to */}
-          <Route path="*" element={<NoPage/>} />
+          <Route path="*" element={<NoPage />} />
         </Routes>
       </BrowserRouter>
     </>

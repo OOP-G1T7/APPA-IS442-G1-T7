@@ -11,6 +11,16 @@ const theme = createTheme({
         button: {
             main: '#0D4EA6',
         },
+        buttonFontColor: {
+            main: '#FFFFFF'
+        },
+        title: {
+            flexGrow: 1,
+            textAlign: "center"
+        },
+        toolbar: {
+            justifyContent: 'space-between'
+        },
     },
     typography: {
         fontFamily: `Inter`,
