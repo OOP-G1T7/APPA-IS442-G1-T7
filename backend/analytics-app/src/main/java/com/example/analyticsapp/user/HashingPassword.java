@@ -2,6 +2,9 @@ package com.example.analyticsapp.user;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * Utility class for hashing passwords during registration.
+ */
 public class HashingPassword {
     public static UserEntity hashPassword(UserEntity userEntity) {
         UserEntity newUserEntity = new UserEntity();

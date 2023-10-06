@@ -37,11 +37,11 @@ public class UserController {
                     registeredUserEntity);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataIntegrityViolationException e) {
-            ApiResponse<String> response = new ApiResponse<String>(500, "Error in running the SQL query!",
+            ApiResponse<String> response = new ApiResponse<String>(500, "DataIntegrityViolationException",
                     e.toString());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         } catch (InvalidPasswordException e) {
-            ApiResponse<String> response = new ApiResponse<String>(500, "The password is invalid!",
+            ApiResponse<String> response = new ApiResponse<String>(500, "InvalidPasswordException",
                     e.toString());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

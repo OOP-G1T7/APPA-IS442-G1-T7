@@ -15,12 +15,9 @@ public class UserServiceImplementation implements UserService {
     @Override
     public UserEntity register(UserEntity userEntity) throws InvalidPasswordException {
         // Password Validation
-        try {
-            PasswordValidation.validatePassword(userEntity.getPassword());
-            UserEntity newUserEntity = HashingPassword.hashPassword(userEntity);
-            return userRepository.save(newUserEntity);
-        } finally {
-        }
+        PasswordValidation.validatePassword(userEntity.getPassword());
+        UserEntity newUserEntity = HashingPassword.hashPassword(userEntity);
+        return userRepository.save(newUserEntity);
     }
 
 }

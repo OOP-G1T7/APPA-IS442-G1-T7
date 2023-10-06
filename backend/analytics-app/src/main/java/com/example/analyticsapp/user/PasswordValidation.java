@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for validating passwords during registration.
+ */
 public class PasswordValidation {
     public static void validatePassword(String password) {
         ArrayList<String> errors = new ArrayList<String>();
