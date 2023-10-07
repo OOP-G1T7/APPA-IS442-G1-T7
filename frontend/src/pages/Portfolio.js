@@ -16,19 +16,24 @@ export default function Portfolio() {
         <>
             <ThemeProvider theme={theme}>
                 <Navbar></Navbar>
-                <Grid container spacing={2} paddingLeft={2}>
+                <Grid
+                    container
+                    spacing={0}
+                    direction="column"
+                    alignItems="center"
+                    justifyContent="center"
+                >
                     <Grid item xs={8}>
+                        <h2>Your Portfolios</h2>
                     </Grid>
-                    <Grid item xs={4}>
-                    </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={8} minHeight={100}>
+                        <p>You have no existing portfolios</p>
                     </Grid>
                     <Grid item xs={8}>
+                        <Button onClick={handleClick} style={{ textTransform: 'none' }}>Create a new portfolio</Button>
                     </Grid>
                 </Grid>
-                <h2>Your Portfolios</h2>
-                <p>You have no existing portfolios</p>
-                <Button onClick={handleClick} style={{ textTransform: 'none' }}>Create a new portfolio</Button>
+
                 {/* <Button onClick={handleClick} color='button' style={{ textTransform: 'none' }}>Create a new portfolio</Button> */}
             </ThemeProvider>
 
