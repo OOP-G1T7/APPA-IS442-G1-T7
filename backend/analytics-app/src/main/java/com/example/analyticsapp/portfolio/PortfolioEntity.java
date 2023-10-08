@@ -2,9 +2,9 @@ package com.example.analyticsapp.portfolio;
 
 import jakarta.persistence.*;
 
-// import java.util.*;
+import java.util.*;
 
-// import com.example.analyticsapp.stock.StockEntity;
+import com.example.analyticsapp.stock.StockEntity;
 
 @Entity
 public class PortfolioEntity {
@@ -17,8 +17,8 @@ public class PortfolioEntity {
     private String description;
 
     // Need one to many mapping to StockEntity
-    // @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<StockEntity> stocks = new ArrayList<>();
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StockEntity> stocks = new ArrayList<>();
 
     public long getPortfolioId() {
         return portfolioId;
@@ -53,9 +53,9 @@ public class PortfolioEntity {
         this.description = description;
     }
 
-    // public List<StockEntity> getStocks() {
-    //     return stocks;
-    // }
+    public List<StockEntity> getStocks() {
+        return stocks;
+    }
 
 
 
