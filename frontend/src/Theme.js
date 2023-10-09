@@ -1,4 +1,4 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
     palette: {
         mode: 'light',
@@ -11,14 +11,19 @@ const theme = createTheme({
         button: {
             main: '#0D4EA6',
         },
+        buttonFontColor: {
+            main: '#FFFFFF'
+        },
+        title: {
+            flexGrow: 1,
+            textAlign: "center"
+        },
+        toolbar: {
+            justifyContent: 'space-between'
+        },
     },
     typography: {
-        fontFamily: 'Inter',
+        fontFamily: `Inter`,
     },
 });
-export default function App() {
-    return (
-        <ThemeProvider theme={theme}>
-        </ThemeProvider>
-    );
-}
+export default theme;
