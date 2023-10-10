@@ -29,8 +29,8 @@ public class StockWrapperController {
             // Extract the relevant time series data based on the specified timeframe
             JSONObject timeSeries = stockData.getJSONObject("Monthly Time Series");
 
-            // Create a TreeMap with a custom comparator to sort by date from newest to oldest
-            TreeMap<LocalDate, String> sortedData = new TreeMap<>(Collections.reverseOrder());
+            // Create a TreeMap to automatically sort the data by date
+            TreeMap<LocalDate, String> sortedData = new TreeMap<>();
 
             for (String dateStr : timeSeries.keySet()) {
                 JSONObject timeData = timeSeries.getJSONObject(dateStr);
@@ -38,6 +38,7 @@ public class StockWrapperController {
 
                 // Parse the date string into a LocalDate object
                 LocalDate date = LocalDate.parse(dateStr);
+
                 sortedData.put(date, closingPrice);
             }
 
