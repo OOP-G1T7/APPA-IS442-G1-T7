@@ -18,7 +18,6 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
-
     @PostMapping
     public PortfolioEntity createPortfolio(@RequestBody int userId, String name, String description) {
         return portfolioService.createPortfolio(userId, name, description);
