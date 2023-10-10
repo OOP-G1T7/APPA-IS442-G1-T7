@@ -10,11 +10,18 @@ cd frontend
 npm install
 ```
 
+Proceed with installation depending on your Maven setup:
+
+* [With Maven Extension](#with-maven-extension-in-ide)
+* [With MVN in OS](#with-mvn-in-os)
+
+<br />
+
 ### With Maven extension in IDE:
 
 #### 2. Backend Setup
 
-> If below steps display an error, run `cd to backend\analytics-app` before starting the steps.
+> If below steps display an error, run `cd backend\analytics-app` before starting the steps.
 
 <ol>
     <li>Open Maven hierarchy</li>
@@ -28,23 +35,27 @@ npm install
 
 #### 3. Run Project
 **Frontend**
+
+<p>Go to root directory (APPA-IS442-G1-T7)</p>
+
 ```
-// Go to root directory (APPA-IS442-G1-T7)
 npm run frontend
 ```
+<br />
 
 **Backend**
 1. Navigate to the file: src\main\java\com\example\analyticsapp\AnalyticsAppApplication.java
 2. Run code
 
+</br>
+
 ### With MVN in OS:
 #### 2. Backend Setup
 
-```
-// Go to root directory (APPA-IS442-G1-T7)
-// If there's an error, run below 
-cd backend\analytics-app
+<p>Go to root directory (APPA-IS442-G1-T7) </p>
 
+If there's an error, run `cd backend\analytics-app` first.
+```
 mvn clean install
 ```
 
