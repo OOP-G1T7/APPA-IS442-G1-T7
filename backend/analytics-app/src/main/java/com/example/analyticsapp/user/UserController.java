@@ -1,12 +1,12 @@
 package com.example.analyticsapp.user;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.analyticsapp.common.ApiResponse;
 
 /**
  * Controller class for managing user-related operations.
@@ -25,25 +25,35 @@ public class UserController {
     }
 
     /**
-     * Retrieve a list of all users.
+     * Allows a user to register an account.
      *
-     * @return A list of UserEntity objects.
+     * @return The successfully created UserEntity object.
      */
-    @GetMapping("/get-all")
-    public ArrayList<UserEntity> getAllUsers() {
-        ArrayList<UserEntity> result = userService.getAllUsers();
-        return result;
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<?>> registerUser(@RequestBody UserEntity userEntity) {
+        try {
+            UserEntity registeredUserEntity = userService.register(userEntity);
+            ApiResponse<UserEntity> response = new ApiResponse<UserEntity>(201, "Successfully registered new user!",
+                    registeredUserEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (DataIntegrityViolationException e) {
+            ApiResponse<String> response = new ApiResponse<String>(500, "Error in running the SQL query!",
+                    e.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (InvalidPasswordException e) {
+            ApiResponse<String> response = new ApiResponse<String>(500, "The password is invalid!",
+                    e.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     /**
-     * Retrieve a one user based on their username.
+     * Allows a user to log into an account.
      *
-     * @return An UserEntity object.
+     * @return A JWT token.
      */
-    @GetMapping("/{username}")
-    public UserEntity getOneUser(@PathVariable String username) {
-        UserEntity result = userService.getOneUser(username);
-        return result;
+    @PostMapping("/login")
+    public String loginUser(@RequestBody UserEntity userEntity) {
+        return "Login!";
     }
-
 }

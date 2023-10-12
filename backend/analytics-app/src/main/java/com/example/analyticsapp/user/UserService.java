@@ -1,23 +1,20 @@
 package com.example.analyticsapp.user;
 
-import java.util.ArrayList;
-
 /**
  * Service interface for managing user-related business logic.
  */
 public interface UserService {
     /**
-     * Get a list of all users.
+     * Register a user.
      *
-     * @return A list of user objects.
+     * @return The successfully created UserEntity object.
      */
-    ArrayList<UserEntity> getAllUsers();
+    UserEntity register(UserEntity userEntity);
 
     /**
-     * Get a user based on their username
+     * Log a user in.
      *
-     * @return A user object.
+     * @return A JWT Token.
      */
-    UserEntity getOneUser(String username);
-
+    // String login(UserEntity userEntity);
 }

@@ -1,7 +1,5 @@
 package com.example.analyticsapp.user;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,15 +13,14 @@ public class UserServiceImplementation implements UserService {
     UserRepository userRepository;
 
     @Override
-    public ArrayList<UserEntity> getAllUsers() {
-        ArrayList<UserEntity> result = userRepository.getAllUsers();
-        return result;
-    }
-
-    @Override
-    public UserEntity getOneUser(String username) {
-        UserEntity result = userRepository.getOneUser(username);
-        return result;
+    public UserEntity register(UserEntity userEntity) throws InvalidPasswordException {
+        // Password Validation
+        try {
+            PasswordValidation.validatePassword(userEntity.getPassword());
+            UserEntity newUserEntity = HashingPassword.hashPassword(userEntity);
+            return userRepository.save(newUserEntity);
+        } finally {
+        }
     }
 
 }
