@@ -49,8 +49,7 @@ public class StockWrapperController {
                 // Format the date as a string (if needed)
                 String formattedDate = entry.getKey().toString();
 
-                dataPoint.put("x", formattedDate);
-                dataPoint.put("y", entry.getValue());
+                dataPoint.put(formattedDate, entry.getValue());
                 result.add(dataPoint);
             }
 
