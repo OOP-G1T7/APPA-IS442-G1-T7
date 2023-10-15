@@ -1,5 +1,7 @@
 package com.example.analyticsapp.portfolio;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,9 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
+    @Autowired
+    private StockService stockService;
+
     @PostMapping
     public PortfolioEntity createPortfolio(@RequestBody int userId, String name, String description) {
         return portfolioService.createPortfolio(userId, name, description);
@@ -33,4 +38,8 @@ public class PortfolioController {
         portfolioService.editPortfolio(portfolioId, userId, name, description);
     }
 
+    @GetMapping("/{portfolioId}/stocks")
+    public ArrayList<StockEntity> retrieveAllStocks(@PathVariable int portfolio_id) {
+        return stockService.retrieveAllStocks(portfolio_id);
+    }
 }

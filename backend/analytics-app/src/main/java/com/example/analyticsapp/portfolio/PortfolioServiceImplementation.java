@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.example.analyticsapp.portfolio.PortfolioRepository;
 
 @Service
-public class PortfolioServiceImplementation extends PortfolioService{
+public class PortfolioServiceImplementation implements PortfolioService{
 
     @Autowired
     private PortfolioRepository portfolioRepo;    

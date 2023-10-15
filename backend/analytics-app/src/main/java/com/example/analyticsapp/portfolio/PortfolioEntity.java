@@ -1,9 +1,13 @@
 package com.example.analyticsapp.portfolio;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,6 +19,9 @@ public class PortfolioEntity {
     private int userId;
     private String name;
     private String description;
+
+    @OneToMany(mappedBy = "portfolioEntity")
+    private ArrayList<StockEntity> stocks = new ArrayList<StockEntity>();
 
     public void setName(String name) {
         this.name = name;

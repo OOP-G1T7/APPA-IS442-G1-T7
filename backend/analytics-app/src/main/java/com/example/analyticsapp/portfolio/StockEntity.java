@@ -1,5 +1,7 @@
 package com.example.analyticsapp.portfolio;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -10,29 +12,28 @@ import jakarta.persistence.Table;
 @Table(name="portfolio_stock")
 public class StockEntity {
     
-    @Id
-    private String ticker;
+    @EmbeddedId
+    private StockPK stockPk;
+
+    @Column(name = "quantity")
+    private int quantity;
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id", referencedColumnName = "portfolio_id")
-    private int portfolioId;
+    private PortfolioEntity portfolioEntity;
 
-    private int quantity;
+    
 
-    public String getTicker() {
-        return ticker;
+    public StockPK getStockPk() {
+        return stockPk;
     }
 
-    public int getPortfolioId() {
-        return portfolioId;
+    public void setStockPk(StockPK stockPk) {
+        this.stockPk = stockPk;
     }
 
     public int getQuantity() {
         return quantity;
-    }
-
-    public void setTicker(String ticker) {
-        this.ticker = ticker;
     }
 
     public void setQuantity(int quantity) {

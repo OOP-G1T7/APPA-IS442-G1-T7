@@ -1,6 +1,6 @@
 package com.example.analyticsapp.portfolio;
 
-public class PortfolioService {
+public interface PortfolioService {
 
 
     PortfolioEntity createPortfolio(int userId, String name, String description);
