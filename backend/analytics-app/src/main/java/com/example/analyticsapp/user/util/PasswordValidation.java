@@ -1,4 +1,4 @@
-package com.example.analyticsapp.user;
+package com.example.analyticsapp.user.util;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * Utility class for validating passwords during registration.
  */
 public class PasswordValidation {
-    public static void validatePassword(String password) {
+    public static void validatePassword(String password, String passwordConfirm) {
         ArrayList<String> errors = new ArrayList<String>();
         if (password.length() < 8) {
             errors.add("Password too short");
@@ -27,6 +27,9 @@ public class PasswordValidation {
         }
         if (!containsSymbol(password)) {
             errors.add("Password requires a symbol");
+        }
+        if (!password.equals(passwordConfirm)) {
+            errors.add("Confirmation password does not match the first password");
         }
         if (errors.size() != 0) {
             throw new InvalidPasswordException(errors.toString());

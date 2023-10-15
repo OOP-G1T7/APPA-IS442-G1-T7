@@ -1,4 +1,4 @@
-package com.example.analyticsapp.user;
+package com.example.analyticsapp.user.util;
 
 /**
  * A custom exception class for handling invalid passwords.
