@@ -8,10 +8,12 @@
     "@mui/icons-material": "^5.14.12",
     "@mui/material": "^5.14.12",
     "@mui/styled-engine-sc": "^5.14.0",
+    "@mui/x-charts": "^6.0.0-alpha.15",
     "@mui/x-date-pickers": "^6.11.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.5.1",
     "organize-imports-cli": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,5 +49,6 @@
   "devDependencies": {
     "fast-glob": "^3.3.1",
     "unplugin-auto-import": "^0.16.6"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }
