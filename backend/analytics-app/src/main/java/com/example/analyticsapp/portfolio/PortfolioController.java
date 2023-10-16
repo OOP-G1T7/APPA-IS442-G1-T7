@@ -39,7 +39,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/{portfolioId}/stocks")
-    public ArrayList<StockEntity> retrieveAllStocks(@PathVariable int portfolio_id) {
-        return stockService.retrieveAllStocks(portfolio_id);
+    public ArrayList<StockEntity> retrieveAllStocks(@PathVariable int portfolioId) {
+        return stockService.retrieveAllStocks(portfolioId);
     }
 }

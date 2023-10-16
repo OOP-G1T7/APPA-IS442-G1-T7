@@ -6,7 +6,7 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class StockPK {
     
-    @Column(name = "portfolio_id")
+    @Column(name = "portfolio_id",insertable = false, updatable = false)
     private int portfolioId;
 
     @Column(name = "ticker")
