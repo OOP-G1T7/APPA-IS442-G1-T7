@@ -6,8 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.PutMapping;
+// import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.analyticsapp.stock.StockEntityDTO;
 
 @RestController
 @RequestMapping("/api/portfolio")
@@ -17,12 +25,12 @@ public class PortfolioController {
     @Qualifier("PortfolioServiceImpl")
     private PortfolioService portfolioService;
 
-    @GetMapping("")
+    @GetMapping("/test")
     public String portfolioHello() {
         return "Portfolio Check!";
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("")
     public ArrayList<PortfolioEntity> getAll() {
         
         ArrayList<PortfolioEntity> result = portfolioService.getAll();
@@ -34,7 +42,7 @@ public class PortfolioController {
      * @param userId
      * @return A list of PortfolioEntity objects.
      */
-    @GetMapping("/get-all/{userId}")
+    @GetMapping("/{userId}")
     public ArrayList<PortfolioEntity> getAllPortfolios(@PathVariable int userId) {
         
         ArrayList<PortfolioEntity> result = portfolioService.getAllPortfolios(userId);
@@ -49,8 +57,14 @@ public class PortfolioController {
      * @return A PortfolioEntity object.
      */
     @GetMapping("/get-one/{portfolioId}")
-    public PortfolioEntity getOnePortfolio(@PathVariable long portfolioId) {
+    public PortfolioEntity getOnePortfolio(@PathVariable int portfolioId) {
         PortfolioEntity result = portfolioService.getOnePortfolio(portfolioId);
+        return result;
+    }
+
+    @PostMapping
+    public PortfolioEntity addStockToPortfolio(@RequestBody StockEntityDTO stockDTO) {
+        PortfolioEntity result = portfolioService.addStockToPortfolio(stockDTO);
         return result;
     }
 
