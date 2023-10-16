@@ -1,5 +1,7 @@
 package com.example.analyticsapp.portfolio;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,15 +11,17 @@ import com.example.analyticsapp.portfolio.PortfolioRepository;
 public class PortfolioServiceImplementation implements PortfolioService{
 
     @Autowired
-    private PortfolioRepository portfolioRepo;    
-
+    private PortfolioRepository portfolioRepo;  
+    
     @Override
-    public PortfolioEntity createPortfolio(int userId, String name, String description) {
-        PortfolioEntity newPortfolio = new PortfolioEntity();
-        newPortfolio.setName(name);
-        newPortfolio.setUserId(userId);
-        newPortfolio.setDescription(description);
-        return portfolioRepo.save(newPortfolio);
+    public ArrayList<PortfolioEntity> retrieveAllPortfolios() {
+        ArrayList<PortfolioEntity> result = portfolioRepo.getAllPortfolios();
+        return result;
+    }
+
+    public ArrayList<PortfolioEntity> retrieveAllPortfoliosByUserId(int userId) {
+        ArrayList<PortfolioEntity> result = portfolioRepo.getAllPortfoliosByUserId(userId);
+        return result;
     }
 
     @Override
@@ -32,5 +36,14 @@ public class PortfolioServiceImplementation implements PortfolioService{
         retrieved.setDescription(description);
         retrieved.setName(name);
         portfolioRepo.save(retrieved);
+    }
+
+     @Override
+    public PortfolioEntity createPortfolio(int userId, String name, String description) {
+        PortfolioEntity newPortfolio = new PortfolioEntity();
+        newPortfolio.setName(name);
+        newPortfolio.setUserId(userId);
+        newPortfolio.setDescription(description);
+        return portfolioRepo.save(newPortfolio);
     }
 }

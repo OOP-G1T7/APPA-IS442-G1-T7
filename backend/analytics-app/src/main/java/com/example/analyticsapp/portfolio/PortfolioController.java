@@ -23,12 +23,19 @@ public class PortfolioController {
     @Autowired
     private StockService stockService;
 
-    @PostMapping
-    public PortfolioEntity createPortfolio(@RequestBody int userId, String name, String description) {
-        return portfolioService.createPortfolio(userId, name, description);
+    @GetMapping("")
+    public ArrayList<PortfolioEntity> retrieveAllPortfolios() {
+        
+        ArrayList<PortfolioEntity> result = portfolioService.retrieveAllPortfolios();
+        return result;
     }
 
-    @GetMapping("/{portfolioId}")
+    @GetMapping("/user/{userId}")
+    public ArrayList<PortfolioEntity> retrieveAllPortfoliosByUserId(@PathVariable int userId) {
+        return portfolioService.retrieveAllPortfoliosByUserId(userId);
+    }
+
+    @GetMapping("/pid/{portfolioId}")
     public PortfolioEntity retrievePortfolio(@PathVariable int portfolioId) {
         return portfolioService.retrievePortfolio(portfolioId);
     }
@@ -41,5 +48,10 @@ public class PortfolioController {
     @GetMapping("/{portfolioId}/stocks")
     public ArrayList<StockEntity> retrieveAllStocks(@PathVariable int portfolioId) {
         return stockService.retrieveAllStocks(portfolioId);
+    }
+
+    @PostMapping
+    public PortfolioEntity createPortfolio(@RequestBody int userId, String name, String description) {
+        return portfolioService.createPortfolio(userId, name, description);
     }
 }
