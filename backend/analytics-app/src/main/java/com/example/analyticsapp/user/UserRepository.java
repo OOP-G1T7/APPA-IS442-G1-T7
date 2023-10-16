@@ -1,7 +1,5 @@
 package com.example.analyticsapp.user;
 
-import java.util.ArrayList;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,22 +9,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
-
     /**
-     * Find all users.
+     * Find a user by their email.
      *
+     * @param email The email to search for.
      * @return The user if found, or null if not found.
      */
-    @Query(value = "SELECT * FROM user", nativeQuery = true)
-    ArrayList<UserEntity> getAllUsers();
-
-    /**
-     * Find all user by their username.
-     *
-     * @param username The username to search for.
-     * @return The user if found, or null if not found.
-     */
-    @Query(value = "SELECT * FROM user where username = ?", nativeQuery = true)
-    UserEntity getOneUser(String username);
-
+    @Query(value = "SELECT * FROM user where email = ?", nativeQuery = true)
+    UserEntity getUserByEmail(String email);
 }

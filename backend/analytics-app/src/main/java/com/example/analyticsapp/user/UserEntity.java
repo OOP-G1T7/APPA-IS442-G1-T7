@@ -1,22 +1,26 @@
 package com.example.analyticsapp.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 /**
  * Entity class representing a user in the database.
  */
 @Entity
+@Table(name = "user")
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
-    private String username;
     private String email;
     private String password;
+
+    public UserEntity() {
+    }
+
+    public UserEntity(String email) {
+        this.email = email;
+    }
 
     public int getUserId() {
         return userId;
@@ -24,14 +28,6 @@ public class UserEntity {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
