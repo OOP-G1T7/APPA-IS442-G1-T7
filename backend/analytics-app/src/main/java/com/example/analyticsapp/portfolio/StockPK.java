@@ -28,5 +28,8 @@ public class StockPK {
         this.ticker = ticker;
     }
 
+    public String toString() {
+        return "StockPK [portfolioId=" + portfolioId + ", ticker=" + ticker + "]";
+    }
     
 }

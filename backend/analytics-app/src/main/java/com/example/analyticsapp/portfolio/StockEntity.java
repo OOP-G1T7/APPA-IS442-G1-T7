@@ -37,8 +37,12 @@ public class StockEntity {
         this.quantity = quantity;
     }
 
-    public void setPortfolio(PortfolioEntity portfolioEntity) {
-        this.portfolioEntity = portfolioEntity;
+    @Override
+    public String toString() {
+        return "StockEntity [stockPk=" + stockPk + ", quantity=" + quantity + "]";
     }
+    // public void setPortfolio(PortfolioEntity portfolioEntity) {
+    //     this.portfolioEntity = portfolioEntity;
+    // }
     
 }

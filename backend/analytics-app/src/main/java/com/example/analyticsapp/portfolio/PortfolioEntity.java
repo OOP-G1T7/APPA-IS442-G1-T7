@@ -74,10 +74,10 @@ public class PortfolioEntity {
         this.stocks = stocks;
     }
 
-    public void addStock(StockEntity stock) {
-        stocks.add(stock);
-        stock.setPortfolio(this);
-    }
+    // public void addStock(StockEntity stock) {
+    //     stocks.add(stock);
+    //     stock.setPortfolio(this);
+    // }
 
     public int getPortfolioId() {
         return portfolioId;
@@ -87,5 +87,9 @@ public class PortfolioEntity {
         this.portfolioId = portfolioId;
     }
     
+    public String toString() {
+        return "PortfolioEntity [portfolioId=" + portfolioId + ", userId=" + userId + ", name=" + name + ", description="
+                + description + ", stocks=" + stocks + "]";
+    }
 
 }

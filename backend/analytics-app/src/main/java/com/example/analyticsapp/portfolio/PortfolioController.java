@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.analyticsapp.portfolio.PortfolioEntity;
@@ -45,7 +46,7 @@ public class PortfolioController {
         portfolioService.editPortfolio(portfolioId, userId, name, description);
     }
 
-    @GetMapping("/{portfolioId}/stocks")
+    @GetMapping("/portfolio/{portfolioId}/stocks")
     public ArrayList<StockEntity> retrieveAllStocks(@PathVariable int portfolioId) {
         return stockService.retrieveAllStocks(portfolioId);
     }
@@ -54,5 +55,11 @@ public class PortfolioController {
     public PortfolioEntity createPortfolio(@RequestBody PortfolioEntity newPortfolioEntity) {
         System.out.println("createPortfolio and hello world");
         return portfolioService.createPortfolio(newPortfolioEntity);
+    }
+
+    @PostMapping("/portfolio/{portfolioId}")
+    public StockEntity addStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        StockEntity result = stockService.addStock(stockDTO, portfolioId);
+        return result;
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public interface StockService {
     
-    StockEntity addStock(int portfolio_id, String ticker, int quantity);
+    StockEntity addStock(StockRequestDTO stockDTO, int portfolioId);
 
     ArrayList<StockEntity> retrieveAllStocks(int portfolio_id);
 
