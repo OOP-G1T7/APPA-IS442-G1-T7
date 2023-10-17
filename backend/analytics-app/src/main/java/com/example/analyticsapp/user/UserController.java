@@ -3,6 +3,7 @@ package com.example.analyticsapp.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.analyticsapp.auth.LoginReq;
 import com.example.analyticsapp.auth.LoginRes;
-import com.example.analyticsapp.auth.UserNotFoundException;
 import com.example.analyticsapp.auth.jwt.JwtUtil;
 import com.example.analyticsapp.common.ApiResponse;
 import com.example.analyticsapp.user.util.InvalidPasswordException;
@@ -40,8 +40,10 @@ public class UserController {
     }
 
     @GetMapping("")
-    public String userHello() {
-        return "Hello User!";
+    public ResponseEntity<ApiResponse<String>> userHello() {
+        ApiResponse<String> response = new ApiResponse<String>(200, "Successfully retrieved message!",
+                "Hello User!");
+        return ResponseEntity.ok().body(response);
     }
 
     /**
