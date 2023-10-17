@@ -15,16 +15,18 @@ public class StockServiceImplementation implements StockService{
     private PortfolioRepository portfolioRepo;
 
     @Override
-    public StockEntity addStock(StockRequestDTO stockDTO, int portfolioId) {
+    public StockEntity addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId) {
         // System.out.println("addStock and hello world");
         PortfolioEntity portfolio = portfolioRepo.getPortfolio(portfolioId);
         StockEntity stock = new StockEntity();
         StockPK stockPk = new StockPK();
+
         stockPk.setPortfolioId(portfolioId);
         stockPk.setTicker(stockDTO.getTicker());
+
         stock.setStockPk(stockPk);
         stock.setQuantity(stockDTO.getQuantity());
-        portfolio.getStocks().add(stock);
+        portfolio.addStock(stock);
         return stockRepo.save(stock);
     }
 

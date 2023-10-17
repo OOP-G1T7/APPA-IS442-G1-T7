@@ -32,15 +32,7 @@ public class PortfolioEntity {
     @OneToMany(mappedBy = "portfolioEntity")
     //need to use List not ArrayList
     private List<StockEntity> stocks = new ArrayList<>();
-
-    // public PortfolioEntity() {
-    // }
-
-    // public PortfolioEntity(int userId, String name, String description) {
-    //     this.userId = userId;
-    //     this.name = name;
-    //     this.description = description;
-    // }
+    
     
     public void setName(String name) {
         this.name = name;
@@ -74,10 +66,10 @@ public class PortfolioEntity {
         this.stocks = stocks;
     }
 
-    // public void addStock(StockEntity stock) {
-    //     stocks.add(stock);
-    //     stock.setPortfolio(this);
-    // }
+    public void addStock(StockEntity stock) {
+        stocks.add(stock);
+        stock.setPortfolio(this);
+    }
 
     public int getPortfolioId() {
         return portfolioId;

@@ -3,6 +3,7 @@ package com.example.analyticsapp.portfolio;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,8 +59,9 @@ public class PortfolioController {
     }
 
     @PostMapping("/portfolio/{portfolioId}")
-    public StockEntity addStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
-        StockEntity result = stockService.addStock(stockDTO, portfolioId);
-        return result;
+    public ResponseEntity<StockEntity> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        StockEntity portfolio = stockService.addStockToPortfolio(stockDTO, portfolioId);
+        return ResponseEntity.ok(portfolio);
     }
+
 }

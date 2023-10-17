@@ -40,11 +40,4 @@ public class PortfolioServiceImplementation implements PortfolioService{
     public PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity) {
         return portfolioRepo.save(newPortfolioEntity);
     }
-
-    // @Override
-    // public PortfolioEntity addStockToPortfolio(StockEntity stock, int portfolioId) {
-    //     PortfolioEntity retrieved = portfolioRepo.getPortfolio(portfolioId);
-    //     retrieved.getStocks().add(stock);
-    //     return portfolioRepo.save(retrieved);
-    // }
 }
