@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 public class StockServiceImplementation implements StockService{
@@ -16,7 +17,6 @@ public class StockServiceImplementation implements StockService{
 
     @Override
     public StockEntity addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId) {
-        // System.out.println("addStock and hello world");
         PortfolioEntity portfolio = portfolioRepo.getPortfolio(portfolioId);
         StockEntity stock = new StockEntity();
         StockPK stockPk = new StockPK();
@@ -31,15 +31,17 @@ public class StockServiceImplementation implements StockService{
     }
 
     @Override
-    public ArrayList<StockEntity> retrieveAllStocks(int portfolio_id) {
-        ArrayList<StockEntity> retrievedStocks = stockRepo.getAllStocks(portfolio_id);
+    public ArrayList<StockEntity> retrieveAllStocks(int portfolioId) {
+        ArrayList<StockEntity> retrievedStocks = stockRepo.getAllStocks(portfolioId);
         return retrievedStocks;
     }
 
     @Override
-    public void editStock(int portfolio_id, String ticker, int quantity) {
-        StockEntity retrievedStock = stockRepo.getOneStock(portfolio_id, ticker);
-        retrievedStock.setQuantity(quantity);
-        stockRepo.save(retrievedStock);
+    public StockEntity editStock(StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        StockEntity stock = stockRepo.getOneStock(portfolioId, stockDTO.getTicker());
+        stock.setQuantity(stockDTO.getQuantity());
+        return stockRepo.save(stock);
+
+        
     }
 }

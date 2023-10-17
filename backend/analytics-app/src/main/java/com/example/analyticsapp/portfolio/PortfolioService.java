@@ -10,7 +10,7 @@ public interface PortfolioService {
 
     PortfolioEntity retrievePortfolio(int portfolioId);
 
-    void editPortfolio(int portfolioId, int userId, String name, String description);
-
     PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity);
+
+    PortfolioEntity editPortfolio(PortfolioEntity updatedPortfolio);
 }
