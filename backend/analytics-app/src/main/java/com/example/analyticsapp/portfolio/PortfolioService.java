@@ -12,5 +12,5 @@ public interface PortfolioService {
 
     void editPortfolio(int portfolioId, int userId, String name, String description);
 
-    PortfolioEntity createPortfolio(int userId, String name, String description);
+    PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity);
 }

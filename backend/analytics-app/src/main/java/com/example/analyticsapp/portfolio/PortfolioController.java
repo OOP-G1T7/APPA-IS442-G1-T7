@@ -14,7 +14,7 @@ import com.example.analyticsapp.portfolio.PortfolioEntity;
 import com.example.analyticsapp.portfolio.PortfolioRepository;
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api")
 public class PortfolioController {
 
     @Autowired
@@ -23,19 +23,19 @@ public class PortfolioController {
     @Autowired
     private StockService stockService;
 
-    @GetMapping("")
+    @GetMapping("/portfolios")
     public ArrayList<PortfolioEntity> retrieveAllPortfolios() {
         
         ArrayList<PortfolioEntity> result = portfolioService.retrieveAllPortfolios();
         return result;
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/portfolios/{userId}")
     public ArrayList<PortfolioEntity> retrieveAllPortfoliosByUserId(@PathVariable int userId) {
         return portfolioService.retrieveAllPortfoliosByUserId(userId);
     }
 
-    @GetMapping("/pid/{portfolioId}")
+    @GetMapping("/portfolio/{portfolioId}")
     public PortfolioEntity retrievePortfolio(@PathVariable int portfolioId) {
         return portfolioService.retrievePortfolio(portfolioId);
     }
@@ -50,8 +50,9 @@ public class PortfolioController {
         return stockService.retrieveAllStocks(portfolioId);
     }
 
-    @PostMapping
-    public PortfolioEntity createPortfolio(@RequestBody int userId, String name, String description) {
-        return portfolioService.createPortfolio(userId, name, description);
+    @PostMapping("/portfolio")
+    public PortfolioEntity createPortfolio(@RequestBody PortfolioEntity newPortfolioEntity) {
+        System.out.println("createPortfolio and hello world");
+        return portfolioService.createPortfolio(newPortfolioEntity);
     }
 }

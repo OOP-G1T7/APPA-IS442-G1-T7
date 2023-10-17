@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.analyticsapp.portfolio.PortfolioRepository;
-
 @Service
 public class PortfolioServiceImplementation implements PortfolioService{
 
@@ -39,11 +37,7 @@ public class PortfolioServiceImplementation implements PortfolioService{
     }
 
      @Override
-    public PortfolioEntity createPortfolio(int userId, String name, String description) {
-        PortfolioEntity newPortfolio = new PortfolioEntity();
-        newPortfolio.setName(name);
-        newPortfolio.setUserId(userId);
-        newPortfolio.setDescription(description);
-        return portfolioRepo.save(newPortfolio);
+    public PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity) {
+        return portfolioRepo.save(newPortfolioEntity);
     }
 }
