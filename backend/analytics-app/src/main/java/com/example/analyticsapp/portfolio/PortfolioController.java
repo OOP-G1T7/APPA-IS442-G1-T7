@@ -3,11 +3,14 @@ package com.example.analyticsapp.portfolio;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.analyticsapp.portfolio.PortfolioEntity;
@@ -40,12 +43,7 @@ public class PortfolioController {
         return portfolioService.retrievePortfolio(portfolioId);
     }
 
-    @GetMapping("/{portfolioId}/{userId}/{name}/{description}")
-    public void editPortfolio(@PathVariable int portfolioId, @PathVariable int userId, @PathVariable String name, @PathVariable String description) {
-        portfolioService.editPortfolio(portfolioId, userId, name, description);
-    }
-
-    @GetMapping("/{portfolioId}/stocks")
+    @GetMapping("/portfolio/{portfolioId}/stocks")
     public ArrayList<StockEntity> retrieveAllStocks(@PathVariable int portfolioId) {
         return stockService.retrieveAllStocks(portfolioId);
     }
@@ -55,4 +53,23 @@ public class PortfolioController {
         System.out.println("createPortfolio and hello world");
         return portfolioService.createPortfolio(newPortfolioEntity);
     }
+
+    @PostMapping("/portfolio/{portfolioId}")
+    public ResponseEntity<StockEntity> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        StockEntity stock = stockService.addStockToPortfolio(stockDTO, portfolioId);
+        return ResponseEntity.ok(stock);
+    }
+
+    @PutMapping("/portfolio")
+    public ResponseEntity<PortfolioEntity> editPortfolio(@RequestBody PortfolioEntity updatedPortfolio) {
+        PortfolioEntity portfolio = portfolioService.editPortfolio(updatedPortfolio);
+        return ResponseEntity.ok(portfolio);
+    }
+
+    @PutMapping("/portfolio/stock/{portfolioId}")
+    public ResponseEntity<StockEntity> editStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        StockEntity stock = stockService.editStock(stockDTO, portfolioId);
+        return ResponseEntity.ok(stock);
+    }
+
 }

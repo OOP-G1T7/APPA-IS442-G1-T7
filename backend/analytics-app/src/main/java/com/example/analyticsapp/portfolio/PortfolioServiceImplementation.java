@@ -28,16 +28,13 @@ public class PortfolioServiceImplementation implements PortfolioService{
         return retrieved;
     }
 
-    @Override
-    public void editPortfolio(int portfolioId, int userId, String name, String description) {
-        PortfolioEntity retrieved = portfolioRepo.getPortfolio(portfolioId);
-        retrieved.setDescription(description);
-        retrieved.setName(name);
-        portfolioRepo.save(retrieved);
-    }
-
      @Override
     public PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity) {
         return portfolioRepo.save(newPortfolioEntity);
+    }
+
+    @Override
+    public PortfolioEntity editPortfolio(PortfolioEntity updatedPortfolio) {
+        return portfolioRepo.save(updatedPortfolio);
     }
 }

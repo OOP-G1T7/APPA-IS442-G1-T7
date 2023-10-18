@@ -4,7 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+// import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,7 +19,8 @@ public class StockEntity {
     @Column(name = "quantity")
     private int quantity;
 
-    @ManyToOne
+    @OneToOne
+    @MapsId("portfolioId")
     @JoinColumn(name = "portfolio_id", referencedColumnName = "portfolio_id")
     private PortfolioEntity portfolioEntity;
 
@@ -37,6 +40,10 @@ public class StockEntity {
         this.quantity = quantity;
     }
 
+    @Override
+    public String toString() {
+        return "StockEntity [stockPk=" + stockPk + ", quantity=" + quantity + "]";
+    }
     public void setPortfolio(PortfolioEntity portfolioEntity) {
         this.portfolioEntity = portfolioEntity;
     }

@@ -1,10 +1,12 @@
 package com.example.analyticsapp.portfolio;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class StockPK {
+public class StockPK implements Serializable{
     
     @Column(name = "portfolio_id",insertable = false, updatable = false)
     private int portfolioId;
@@ -12,6 +14,7 @@ public class StockPK {
     @Column(name = "ticker")
     private String ticker;
 
+    
     public int getPortfolioId() {
         return portfolioId;
     }
@@ -28,5 +31,8 @@ public class StockPK {
         this.ticker = ticker;
     }
 
+    public String toString() {
+        return "StockPK [portfolioId=" + portfolioId + ", ticker=" + ticker + "]";
+    }
     
 }

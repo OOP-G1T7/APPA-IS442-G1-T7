@@ -2,11 +2,13 @@ package com.example.analyticsapp.portfolio;
 
 import java.util.ArrayList;
 
+import org.springframework.web.bind.annotation.PathVariable;
+
 public interface StockService {
-    
-    StockEntity addStock(int portfolio_id, String ticker, int quantity);
 
-    ArrayList<StockEntity> retrieveAllStocks(int portfolio_id);
+    ArrayList<StockEntity> retrieveAllStocks(int portfolioId);
 
-    void editStock(int portfolio_id, String ticker, int quantity);
+    StockEntity addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId);
+
+    StockEntity editStock(StockRequestDTO stockDTO, @PathVariable int portfolioId);
 }
