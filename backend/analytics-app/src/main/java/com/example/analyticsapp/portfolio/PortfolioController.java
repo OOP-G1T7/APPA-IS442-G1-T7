@@ -2,8 +2,11 @@ package com.example.analyticsapp.portfolio;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +31,7 @@ public class PortfolioController {
 
     @GetMapping("/portfolios")
     public ArrayList<PortfolioEntity> retrieveAllPortfolios() {
-        
+
         ArrayList<PortfolioEntity> result = portfolioService.retrieveAllPortfolios();
         return result;
     }
@@ -55,7 +58,8 @@ public class PortfolioController {
     }
 
     @PostMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<StockEntity> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+    public ResponseEntity<StockEntity> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO,
+            @PathVariable int portfolioId) {
         StockEntity stock = stockService.addStockToPortfolio(stockDTO, portfolioId);
         return ResponseEntity.ok(stock);
     }
@@ -64,6 +68,18 @@ public class PortfolioController {
     public ResponseEntity<PortfolioEntity> editPortfolio(@RequestBody PortfolioEntity updatedPortfolio) {
         PortfolioEntity portfolio = portfolioService.editPortfolio(updatedPortfolio);
         return ResponseEntity.ok(portfolio);
+    }
+
+    @DeleteMapping("/portfolio/{portfolioId}")
+    public ResponseEntity<String> deletePortfolio(@PathVariable int portfolioId) {
+        return portfolioService.deletePortfolio(portfolioId);
+    }
+
+    @DeleteMapping("/portfolio/stocks")
+    public ResponseEntity<String> deleteStocksFromPortfolio(@RequestBody StockPortfolio portfolioStocks) {
+        int portfolioId = portfolioStocks.getPortfolioId();
+        ArrayList<String> stockTickers = portfolioStocks.getPortfolioStockTickers();
+        return stockService.deleteStocksFromPortfolio(portfolioId, stockTickers);
     }
 
     @PutMapping("/portfolio/stock/{portfolioId}")

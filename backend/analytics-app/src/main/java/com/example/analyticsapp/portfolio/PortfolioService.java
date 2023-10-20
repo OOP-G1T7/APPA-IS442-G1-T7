@@ -2,6 +2,8 @@ package com.example.analyticsapp.portfolio;
 
 import java.util.ArrayList;
 
+import org.springframework.http.ResponseEntity;
+
 public interface PortfolioService {
 
     ArrayList<PortfolioEntity> retrieveAllPortfolios();
@@ -11,6 +13,8 @@ public interface PortfolioService {
     PortfolioEntity retrievePortfolio(int portfolioId);
 
     PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity);
+
+    ResponseEntity<String> deletePortfolio(int portfolioId);
 
     PortfolioEntity editPortfolio(PortfolioEntity updatedPortfolio);
 }
