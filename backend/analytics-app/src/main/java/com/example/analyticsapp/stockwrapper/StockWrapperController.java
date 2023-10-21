@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 public class StockWrapperController {
     @GetMapping("/{stockTicker}")
     public ResponseEntity<List<Map<String, String>>> getStock(@PathVariable String stockTicker) {
-        String apiKey = "QJOEZUUAALL4GPLI"; // Replace with your API key
+        String apiKey = "demo"; // Replace with your API key
 
         StockWrapperService stockService = new StockWrapperService(apiKey);
         JSONObject stockData = stockService.getStockData(stockTicker);
@@ -27,7 +27,7 @@ public class StockWrapperController {
             List<Map<String, String>> result = new ArrayList<>();
 
             // Extract the relevant time series data based on the specified timeframe
-            JSONObject timeSeries = stockData.getJSONObject("Monthly Time Series");
+            JSONObject timeSeries = stockData.getJSONObject("Time Series (Daily)");
 
             // Create a TreeMap to automatically sort the data by date
             TreeMap<LocalDate, String> sortedData = new TreeMap<>();

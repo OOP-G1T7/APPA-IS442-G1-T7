@@ -16,7 +16,8 @@ public class StockWrapperService {
     public String getStockEndpoint(String stockTicker) {
         // https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=demo
         // return "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + stockTicker + "&interval=15min&apikey=" + apiKey;
-        return "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=" + stockTicker + "&apikey=" + apiKey;
+        // https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo
+        return "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + stockTicker + "&apikey=" + apiKey;
     }
 
     public JSONObject getStockData(String stockTicker) {
