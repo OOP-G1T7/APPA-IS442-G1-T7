@@ -2,15 +2,19 @@ package com.example.analyticsapp.portfolio;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class PortfolioServiceImplementation implements PortfolioService{
+public class PortfolioServiceImplementation implements PortfolioService {
 
     @Autowired
-    private PortfolioRepository portfolioRepo;  
-    
+    private PortfolioRepository portfolioRepo;
+
     @Override
     public ArrayList<PortfolioEntity> retrieveAllPortfolios() {
         ArrayList<PortfolioEntity> result = portfolioRepo.getAllPortfolios();
@@ -28,7 +32,7 @@ public class PortfolioServiceImplementation implements PortfolioService{
         return retrieved;
     }
 
-     @Override
+    @Override
     public PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity) {
         return portfolioRepo.save(newPortfolioEntity);
     }
@@ -36,5 +40,18 @@ public class PortfolioServiceImplementation implements PortfolioService{
     @Override
     public PortfolioEntity editPortfolio(PortfolioEntity updatedPortfolio) {
         return portfolioRepo.save(updatedPortfolio);
+    }
+
+    @Override
+    public ResponseEntity<String> deletePortfolio(int portfolioId) {
+        JSONObject response = new JSONObject();
+        if (portfolioRepo.findById(portfolioId).isPresent()) {
+            portfolioRepo.deleteById(portfolioId);
+            response.put("message", "Portfolio deleted successfully");
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        } else {
+            response.put("message", "Portfolio not found");
+            return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
+        }
     }
 }
