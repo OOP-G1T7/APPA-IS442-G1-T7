@@ -1,5 +1,7 @@
 package com.example.analyticsapp.user;
 
+import com.example.analyticsapp.user.util.UserRegisterRequest;
+
 /**
  * Service interface for managing user-related business logic.
  */
@@ -9,12 +11,6 @@ public interface UserService {
      *
      * @return The successfully created UserEntity object.
      */
-    UserEntity register(UserEntity userEntity);
+    UserEntity register(UserRegisterRequest userRequest);
 
-    /**
-     * Log a user in.
-     *
-     * @return A JWT Token.
-     */
-    // String login(UserEntity userEntity);
 }
