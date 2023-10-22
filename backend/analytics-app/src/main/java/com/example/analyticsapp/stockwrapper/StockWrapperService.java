@@ -76,52 +76,49 @@ public class StockWrapperService {
         return result;
     }
 
-    public List<Map<String, String>> searchStocks(String search) {
+    public List<Map<String, String>> searchStocks(String search) throws Exception{
         List<Map<String, String>> result = new ArrayList<>();
-        try {
-            String apiUrl = getSearchEndpoint(search);
 
-            if (apiUrl != null) {
-                // Create a URL object
-                URL url = new URL(apiUrl);
+        String apiUrl = getSearchEndpoint(search);
 
-                // Open a connection to the URL
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
+        if (apiUrl != null) {
+            // Create a URL object
+            URL url = new URL(apiUrl);
 
-                // Get the response code
-                int responseCode = connection.getResponseCode();
+            // Open a connection to the URL
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
 
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // Read the response data
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                        StringBuilder response = new StringBuilder();
-                        String line;
+            // Get the response code
+            int responseCode = connection.getResponseCode();
 
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line);
-                        }
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Read the response data
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
 
-                        // Parse the JSON response
-                        JSONObject searchResult = new JSONObject(response.toString());
-                        JSONArray bestMatches = searchResult.getJSONArray("bestMatches");
-
-                        for (int i = 0; i < bestMatches.length(); i++) {
-                            JSONObject stockInfo = bestMatches.getJSONObject(i);
-                            Map<String, String> stockData = new HashMap<>();
-                            stockData.put("symbol", stockInfo.getString("1. symbol"));
-                            stockData.put("name", stockInfo.getString("2. name"));
-                            result.add(stockData);
-                        }
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
                     }
-                } else {
-                    System.out.println("API request failed with status code: " + responseCode);
+
+                    // Parse the JSON response
+                    JSONObject searchResult = new JSONObject(response.toString());
+                    JSONArray bestMatches = searchResult.getJSONArray("bestMatches");
+
+                    for (int i = 0; i < bestMatches.length(); i++) {
+                        JSONObject stockInfo = bestMatches.getJSONObject(i);
+                        Map<String, String> stockData = new HashMap<>();
+                        stockData.put("symbol", stockInfo.getString("1. symbol"));
+                        stockData.put("name", stockInfo.getString("2. name"));
+                        result.add(stockData);
+                    }
                 }
             } else {
-                System.out.println("Failed to retrieve API endpoint.");
+                System.out.println("API request failed with status code: " + responseCode);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            System.out.println("Failed to retrieve API endpoint.");
         }
         return result;
     }
