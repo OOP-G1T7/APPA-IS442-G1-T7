@@ -61,8 +61,7 @@ public class StockWrapperService {
                         String closingPrice = timeData.getString("4. close");
 
                         Map<String, String> dataPoint = new HashMap<>();
-                        dataPoint.put("date", dateStr);
-                        dataPoint.put("close", closingPrice);
+                        dataPoint.put(dateStr, closingPrice);
                         result.add(dataPoint);
                     }
                 }
@@ -109,8 +108,7 @@ public class StockWrapperService {
                     for (int i = 0; i < bestMatches.length(); i++) {
                         JSONObject stockInfo = bestMatches.getJSONObject(i);
                         Map<String, String> stockData = new HashMap<>();
-                        stockData.put("symbol", stockInfo.getString("1. symbol"));
-                        stockData.put("name", stockInfo.getString("2. name"));
+                        stockData.put( stockInfo.getString("1. symbol"), stockInfo.getString("2. name"));
                         result.add(stockData);
                     }
                 }
