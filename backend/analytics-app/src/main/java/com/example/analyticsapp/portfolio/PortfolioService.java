@@ -12,9 +12,9 @@ public interface PortfolioService {
 
     PortfolioEntity retrievePortfolio(int portfolioId);
 
-    PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity);
+    ResponseEntity<String> createPortfolio(PortfolioEntity newPortfolioEntity);
 
     ResponseEntity<String> deletePortfolio(int portfolioId);
 
-    PortfolioEntity editPortfolio(PortfolioEntity updatedPortfolio);
+    ResponseEntity<String> editPortfolio(PortfolioEntity updatedPortfolio);
 }

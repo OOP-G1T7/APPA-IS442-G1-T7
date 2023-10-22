@@ -30,7 +30,7 @@ public class PortfolioEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "portfolioEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "portfolioEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
     // need to use List not ArrayList
     private List<StockEntity> stocks = new ArrayList<>();
 
