@@ -46,22 +46,20 @@ public class PortfolioController {
     }
 
     @PostMapping("/portfolio")
-    public PortfolioEntity createPortfolio(@RequestBody PortfolioEntity newPortfolioEntity) {
-        System.out.println("createPortfolio and hello world");
+    public ResponseEntity<String> createPortfolio(@RequestBody PortfolioEntity newPortfolioEntity) {
         return portfolioService.createPortfolio(newPortfolioEntity);
     }
 
     @PostMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<StockEntity> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO,
+    public ResponseEntity<String> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO,
             @PathVariable int portfolioId) {
-        StockEntity stock = stockService.addStockToPortfolio(stockDTO, portfolioId);
-        return ResponseEntity.ok(stock);
+        return stockService.addStockToPortfolio(stockDTO, portfolioId);
     }
 
     @PutMapping("/portfolio")
-    public ResponseEntity<PortfolioEntity> editPortfolio(@RequestBody PortfolioEntity updatedPortfolio) {
-        PortfolioEntity portfolio = portfolioService.editPortfolio(updatedPortfolio);
-        return ResponseEntity.ok(portfolio);
+    public ResponseEntity<String> editPortfolio(@RequestBody PortfolioEntity updatedPortfolio) {
+        return portfolioService.editPortfolio(updatedPortfolio);
+        
     }
 
     @DeleteMapping("/portfolio/{portfolioId}")
@@ -77,9 +75,8 @@ public class PortfolioController {
     }
 
     @PutMapping("/portfolio/stock/{portfolioId}")
-    public ResponseEntity<StockEntity> editStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
-        StockEntity stock = stockService.editStock(stockDTO, portfolioId);
-        return ResponseEntity.ok(stock);
+    public ResponseEntity<String> editStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        return stockService.editStock(stockDTO, portfolioId);
     }
 
 }

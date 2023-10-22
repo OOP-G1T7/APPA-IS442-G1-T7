@@ -33,13 +33,46 @@ public class PortfolioServiceImplementation implements PortfolioService {
     }
 
     @Override
-    public PortfolioEntity createPortfolio(PortfolioEntity newPortfolioEntity) {
-        return portfolioRepo.save(newPortfolioEntity);
+    public ResponseEntity<String> createPortfolio(PortfolioEntity newPortfolioEntity) {
+        JSONObject response = new JSONObject();
+        try {
+            portfolioRepo.save(newPortfolioEntity);
+            response.put("message", "Portfolio created successfully");
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+
+        } catch (Exception e) {
+            response.put("message", "Error occured while creating portfolio");
+            return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
+        }
     }
 
     @Override
-    public PortfolioEntity editPortfolio(PortfolioEntity updatedPortfolio) {
-        return portfolioRepo.save(updatedPortfolio);
+    public ResponseEntity<String> editPortfolio(PortfolioEntity updatedPortfolio) {
+        JSONObject response = new JSONObject();
+        int portfolioId = updatedPortfolio.getPortfolioId();
+        if (portfolioRepo.findById(portfolioId).isPresent()) {
+            
+            try {
+                portfolioRepo.save(updatedPortfolio);
+                System.out.println("success");
+                String message = "Portfolio with id " + portfolioId + " updated successfully";
+                response.put("message", message);
+                return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println("error");
+                response.put("message", "Error occured while updating the portfolio");
+                return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
+            }
+
+        } else {
+            System.out.println("not found");
+            response.put("message", "Portfolio not found");
+            return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
+        }
+        
+        
+        
     }
 
     @Override
