@@ -12,30 +12,31 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardActionArea } from '@mui/material';
 import Link from '@mui/material/Link';
-// import axios from 'axios';
+import axios from 'axios';
 
 function PortfolioCard(props) {
+    const { portfolio } = props;
     return (
-        <Card sx={{ width: 400 }} variant="outlined">
+        <Card variant="outlined">
             <CardActionArea>
-            <Link href={`/Portfolio/${props.portfolio.id}`} underline="none" color='inherit'>
+            <Link href={`/Portfolio/${portfolio.portfolioId}`} underline="none" color='inherit'>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                {props.portfolio.name}
+                {portfolio.name}
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
                     <Grid container spacing={1} direction={"column"}>
                         <Grid item>
-                        {props.portfolio.description}
+                        {portfolio.description}
                         </Grid>
                         <Grid item container spacing={0} direction="column">
                             {
                                 // iterate through stocks
-                                Object.keys(props.portfolio.stocks).map((stock) => {
+                                portfolio.stocks.map((stock) => {
                                     return (
                                         <Grid item xs={6}>
-                                        {stock}: {props.portfolio.stocks[stock]}
+                                        {stock.stockPk.ticker}: {stock.quantity}
                                     </Grid>
                                     )
                                 })
@@ -50,33 +51,34 @@ function PortfolioCard(props) {
     );
 }
 
-const portfolios = [
-    {
-        id: 1,
-        name: "Portfolio 1",
-        description: "This is portfolio 1",
-        stocks: {
-            "AAPL": 100,
-            "TSLA": 200,
-            "GOOG": 300
-        }
-    }
-]
+const userID = "1";
+
+const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtdXN5YWZmYXE5QGdtYWlsLmNvbSIsImV4cCI6MTkxNDA1MjYyNn0.ze1n-N7sOvZ2sNlScPXXbcTv4TG1M63dA3Ibd9FIxHA';
 
 export default function PortfolioList() {
+    React.useEffect(() => {
+        getPortfolios();
+    }, []);
+
     let navigate = useNavigate();
 
     function handleClick() {
         navigate("/PortfolioCreation");
     }
 
-    // axios.get('http://localhost:5000/api/portfolio')
-    //     .then((response) => {
-    //         console.log(response.data)
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //     });
+    const [portfolios, setPortfolios] = React.useState([]);
+
+    const getPortfolios = async () => {
+        try {
+            const response = await axios.get('/api/portfolios/' + userID, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setPortfolios(response.data);
+            // console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <>
@@ -101,21 +103,20 @@ export default function PortfolioList() {
                             <Grid item xs={5}>
                                 <Typography variant="h4" gutterBottom>Your Portfolios</Typography>
                             </Grid>
-                            <Grid item xs={2} style={{display: "flex"}}>
-                                <Button variant="outlined" onClick={handleClick} style={{fontWeight: "bold", float: "right", flex: 1, alignSelf: "flex-end"}}>
+                            <Grid item xs={12} sm={5} md={3} lg={2} style={{display: "flex"}}>
+                                <Button variant="outlined" onClick={handleClick} style={{fontWeight: "bold", float: "right", flex: 1, alignSelf: "center"}}>
                                     <AddIcon sx={{ mr: 1 }} />
                                     Create Portfolio
                                 </Button>
                             </Grid>
                         </Grid>
-                        <Grid item xs={8}>
-                            
-                        </Grid>
-                        <Grid item xs={8} minHeight={100}>
+                        <Grid item minHeight={100} container spacing={2} justifyContent="space-between">
                             { portfolios.length > 0 ?
                                 portfolios.map((portfolio) => {
                                     return (
+                                        <Grid item xs={12} md={6} lg={4}>
                                         <PortfolioCard portfolio={portfolio}></PortfolioCard>
+                                        </Grid>
                                     )
                                 })
                                 : <Typography variant="body1" color="text.secondary" align="center">You have no existing portfolios</Typography>
