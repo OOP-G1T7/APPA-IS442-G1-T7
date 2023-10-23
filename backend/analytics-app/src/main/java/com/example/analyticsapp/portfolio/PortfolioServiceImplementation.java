@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.analyticsapp.log.AuditLogService;
+
 @Service
 public class PortfolioServiceImplementation implements PortfolioService {
 
