@@ -75,6 +75,12 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>4.0.1</version> <!-- Adjust version as needed -->
 		</dependency>
+		<!-- Redis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>3.7.0</version> <!-- Replace with the latest version -->
+		</dependency>
 	</dependencies>
 
 	<build>
