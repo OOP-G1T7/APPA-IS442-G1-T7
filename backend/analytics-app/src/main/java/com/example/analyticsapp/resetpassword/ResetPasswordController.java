@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.analyticsapp.user.UserEntity;
 import com.example.analyticsapp.user.UserRepository;
 import com.example.analyticsapp.user.UserService;
+import com.example.analyticsapp.user.util.HashingPassword;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 @RestController
 @RequestMapping("/password-reset")
@@ -26,8 +29,7 @@ public class ResetPasswordController {
     @Autowired
     private ResetPasswordService resetService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    
 
 
     // Not sure how we want to give the token, so function output not set yet
@@ -55,7 +57,9 @@ public class ResetPasswordController {
         } */
 
         UserEntity user = tokenStored.getUser();
-        user.setPassword(password, passwordEncoder);
+        String salt = BCrypt.gensalt();
+        String hashedPassword = BCrypt.hashpw(password, salt);
+        user.setPassword(hashedPassword);
         userRepo.save(user);
         return user;
     }

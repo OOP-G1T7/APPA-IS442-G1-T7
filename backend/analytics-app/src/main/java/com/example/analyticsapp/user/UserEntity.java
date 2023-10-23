@@ -1,7 +1,5 @@
 package com.example.analyticsapp.user;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import jakarta.persistence.*;
 
 /**
@@ -44,8 +42,8 @@ public class UserEntity {
         return password;
     }
 
-    public void setPassword(String password, PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(password);
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }
