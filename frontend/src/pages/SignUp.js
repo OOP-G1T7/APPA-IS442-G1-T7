@@ -12,6 +12,9 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from "axios";
+
+const Swal = require("sweetalert2");
 
 function Copyright(props) {
   return (
@@ -30,15 +33,55 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignInSide() {
+export default function SignUpSide() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    window.location.href = `/Home`
+    
+    const userRequest = {
+      email: data.get("email"),
+      password: data.get("password"),
+      passwordConfirm:data.get("passwordConfirm")
+    };
+
+    console.log(userRequest);
+
+    axios
+      .post(`http://localhost:8080/api/user/register`, userRequest)
+      .then((res) => {
+
+        const responseData = res.data; 
+
+        Swal.fire({
+          title: responseData.message,
+          icon: 'success',
+          showCloseButton: true,
+          focusConfirm: true,
+          confirmButtonText:
+            'Sign In',
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            window.location.href = "/SignIn";
+          }
+        })
+      })
+      .catch(function (error) {
+        if (error.response) {
+          // The server responded with an error
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage);
+    
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: errorMessage,
+          });
+        } else {
+          // Network error or something went wrong with the request
+          console.log(error.message);
+        }
+      });
   };
 
   return (
@@ -100,11 +143,11 @@ export default function SignInSide() {
                 margin="normal"
                 required
                 fullWidth
-                name="confirmPassword"
+                name="passwordConfirm"
                 label="Confirm Password"
-                type="confirmPassword"
-                id="confirmPassword"
-                autoComplete="confirm-password"
+                type="password"
+                id="passwordConfirm"
+                autoComplete="passwordConfirm"
               />
               
               <Button
