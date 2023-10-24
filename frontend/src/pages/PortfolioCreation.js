@@ -1,19 +1,26 @@
-import Navbar from "../components/Navbar";
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import { Link } from "react-router-dom";
-import TextField from '@mui/material/TextField';
+import React, { useState, useEffect } from "react";
+import Checkbox from "@mui/material/Checkbox";
+import TextField from "@mui/material/TextField";
 import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
-import Chip from '@mui/material/Chip';
-import React, { useCallback, useState, useEffect } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import { ThemeProvider } from "@emotion/react";
+import theme from "../Theme";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import Checkbox from '@mui/material/Checkbox';
-import SearchIcon from '@mui/icons-material/Search';
+import Paper from '@mui/material/Paper';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableBody from '@mui/material/TableBody';
 
 export default function Portfolio() {
     const [selectedEquities, setEquities] = useState([]);
-    const [showEquities, setShowEquities] = useState([]);
 
     const equities = [
         { symbol: "TSCO.LON", name: "Tesco PLC", type: "Equity", region: "United Kingdom" },
@@ -26,80 +33,132 @@ export default function Portfolio() {
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-    const handleChange = (e, value) => {
-        if (e.target.checked) {
-            setEquities([...selectedEquities, e.target.value]);
-        } else {
-            setEquities(selectedEquities.filter((id) => id !== e.target.value));
-        }
+    const handleChange = (event, value) => {
+        setEquities(value);
     };
 
-
-    useEffect(() => {
-        if (selectedEquities.length === 0) {
-            setShowEquities("");
-        } else {
-            setShowEquities(selectedEquities.join(","));
-        }
-    }, [selectedEquities]);
+    const handleSubmit = (event) => {
+        event.preventDefault();
+    };
 
     return (
         <>
-            <Navbar></Navbar>
-            <h2>Create a portfolio</h2>
-            <Grid container>
-                <Grid item xs={6}>
-                    Portfolio Name
-                    <TextField id="outlined-basic" value="Portfolio 1" variant="outlined" />
-                </Grid>
-                <Grid item xs={6}>
-                    Add stocks to portfolio
-                    <Autocomplete
-                        multiple
-                        popupIcon={<SearchIcon />}
-                        id="checkboxes-tags-demo"
-                        options={equities}
-                        disableCloseOnSelect
-                        sx={{
-                            width: 300,
-                            [`& .${autocompleteClasses.popupIndicator}`]: {
-                                transform: "none"
-                            }
-                        }}
+            <ThemeProvider theme={theme}>
+                <Box sx={{ mt: 5, mb: 2, mx: 10 }}>
+                    <form onSubmit={handleSubmit}>
+                        <Grid container spacing={3} direction="column" justifyContent="center">
+                            <Grid item xs={12} container direction="row" justifyContent="space-between">
+                                <Grid item xs={5}>
+                                    <Typography variant="h4" gutterBottom>
+                                        Create a Portfolio
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                            <Grid item minHeight={100} container spacing={2} justifyContent="space-between">
+                                <Grid item xs={6}>
+                                    <Typography>Portfolio Name</Typography>
+                                    <TextField id="outlined-basic" value="Portfolio 1" variant="outlined" style={{ width: "80%" }} />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography>Add stocks to portfolio</Typography>
+                                    <Autocomplete
+                                        onChange={(event, value) => handleChange(event, value)}
+                                        multiple
+                                        popupIcon={<SearchIcon />}
+                                        id="checkboxes-tags-demo"
+                                        options={equities}
+                                        disableCloseOnSelect
+                                        sx={{
+                                            width: 300,
+                                            [`& .${autocompleteClasses.popupIndicator}`]: {
+                                                transform: "none",
+                                            },
+                                        }}
+                                        style={{ width: "80%" }}
+                                        getOptionLabel={(option) => `${option.symbol} (${option.name})`}
+                                        renderOption={(props, option, { selected }) => (
+                                            <li {...props}>
+                                                <Checkbox
+                                                    icon={icon}
+                                                    checkedIcon={checkedIcon}
+                                                    style={{ marginRight: 8 }}
+                                                    checked={selected}
+                                                    value={option}
+                                                />
+                                                {option.symbol} {option.name}
+                                            </li>
+                                        )}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography>Description</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
 
-                        getOptionLabel={(option) => `${option.symbol} (${option.name})`}
-                        renderOption={(props, option, { selected }) => (
-                            <li {...props}>
-                                <Checkbox
-                                    onClick={handleChange}
-                                    icon={icon}
-                                    checkedIcon={checkedIcon}
-                                    style={{ marginRight: 8 }}
-                                    checked={selected}
-                                    value={option.symbol}
-                                />
-                                {option.symbol} {option.name}
-                            </li>
-                        )}
-                        style={{ width: 500 }}
-                        renderInput={(params) => (
-                            <TextField {...params} />
-                        )}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    Description
-                    <TextField id="outlined-basic" variant="outlined"
-                        multiline
-                        rows={4}
-                        maxRows={Infinity}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    {showEquities}
-                </Grid>
+                                </Grid>
 
-            </Grid>
+                                <Grid item xs={6}>
+                                    <TextField id="outlined-basic" variant="outlined"
+                                        multiline
+                                        rows={4}
+                                        maxRows={Infinity}
+                                        style={{ width: "80%" }}
+                                    />
+                                </Grid>
+                                {selectedEquities.length > 0 && (
+                                    <>
+                                        <Grid item xs={12}>
+                                            <Typography>Added stocks</Typography>
+                                            <TableContainer component={Paper}>
+                                                <Table>
+                                                    <TableBody>
+                                                        {selectedEquities.map((equity) => (
+                                                            <TableRow key={equity.name}>
+                                                                <TableCell><b>{equity.name}</b></TableCell>
+                                                                <TableCell><TextField type="number"
+                                                                    label="Quantity"
+                                                                    InputProps={{ inputProps: { min: 1 } }}
+                                                                    onChange={(event) =>
+                                                                        event.target.value < 1
+                                                                            ? (event.target.value = 1)
+                                                                            : event.target.value
+                                                                    }
+                                                                ></TextField></TableCell>
+                                                                <TableCell><TextField
+                                                                    label="Capital"
+                                                                    type="number"
+                                                                    InputProps={{ inputProps: { min: 1 } }}
+                                                                    onChange={(event) =>
+                                                                        event.target.value < 1
+                                                                            ? (event.target.value = 1)
+                                                                            : event.target.value
+                                                                    }
+                                                                ></TextField></TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        </Grid>
+                                        <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
+                                            {selectedEquities.length > 0 && (
+                                                <div style={{ textAlign: 'center' }}>
+                                                    <Button variant="outlined" style={{ fontWeight: "bold", display: "inline-block" }} type="submit">
+                                                        Create Portfolio
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </Grid>
+                                    </>
+                                )}
+                            </Grid>
+                        </Grid>
+                    </form>
+
+                </Box>
+            </ThemeProvider >
+
         </>
 
     )
