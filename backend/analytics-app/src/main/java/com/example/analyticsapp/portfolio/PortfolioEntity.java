@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="portfolio")
+@Table(name = "portfolio")
 public class PortfolioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,11 +30,10 @@ public class PortfolioEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "portfolioEntity")
-    //need to use List not ArrayList
+    @OneToMany(mappedBy = "portfolioEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    // need to use List not ArrayList
     private List<StockEntity> stocks = new ArrayList<>();
-    
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -78,9 +78,10 @@ public class PortfolioEntity {
     public void setPortfolioId(int portfolioId) {
         this.portfolioId = portfolioId;
     }
-    
+
     public String toString() {
-        return "PortfolioEntity [portfolioId=" + portfolioId + ", userId=" + userId + ", name=" + name + ", description="
+        return "PortfolioEntity [portfolioId=" + portfolioId + ", userId=" + userId + ", name=" + name
+                + ", description="
                 + description + ", stocks=" + stocks + "]";
     }
 

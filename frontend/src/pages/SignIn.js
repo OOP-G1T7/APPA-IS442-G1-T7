@@ -12,6 +12,9 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from "axios";
+
+const Swal = require("sweetalert2");
 
 function Copyright(props) {
   return (
@@ -26,7 +29,6 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
@@ -34,11 +36,38 @@ export default function SignInSide() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    window.location.href = `/Home`
+
+    const userRequest = {
+      email: data.get("email"),
+      password: data.get("password"),
+    };
+
+    console.log(userRequest);
+
+    axios
+      .post(`http://localhost:8080/api/user/login`, userRequest)
+      .then((res) => {
+
+        window.location.href = "/Home";
+
+      })
+      .catch(function (error) {
+        if (error.response) {
+          // The server responded with an error
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage);
+    
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: errorMessage,
+          });
+        } else {
+          // Network error or something went wrong with the request
+          console.log(error.message);
+        }
+      });
+
   };
 
   return (

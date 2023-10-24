@@ -15,6 +15,13 @@ public class UserEntity {
     private String email;
     private String password;
 
+    public UserEntity() {
+    }
+
+    public UserEntity(String email) {
+        this.email = email;
+    }
+
     public int getUserId() {
         return userId;
     }

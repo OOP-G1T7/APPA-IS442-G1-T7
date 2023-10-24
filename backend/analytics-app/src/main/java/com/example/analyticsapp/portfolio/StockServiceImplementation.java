@@ -2,13 +2,16 @@ package com.example.analyticsapp.portfolio;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
-public class StockServiceImplementation implements StockService{
-    
+public class StockServiceImplementation implements StockService {
+
     @Autowired
     private StockRepository stockRepo;
 
@@ -16,18 +19,61 @@ public class StockServiceImplementation implements StockService{
     private PortfolioRepository portfolioRepo;
 
     @Override
-    public StockEntity addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId) {
+    public ResponseEntity<String> addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId) {
+        JSONObject response = new JSONObject();
         PortfolioEntity portfolio = portfolioRepo.getPortfolio(portfolioId);
-        StockEntity stock = new StockEntity();
-        StockPK stockPk = new StockPK();
+        if (portfolio == null) {
+            response.put("message", "Portfolio not found");
+            return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
+        }
 
-        stockPk.setPortfolioId(portfolioId);
-        stockPk.setTicker(stockDTO.getTicker());
+        // try {
+            StockEntity stock = new StockEntity();
+            StockPK stockPk = new StockPK();
 
-        stock.setStockPk(stockPk);
-        stock.setQuantity(stockDTO.getQuantity());
-        portfolio.addStock(stock);
-        return stockRepo.save(stock);
+            stockPk.setPortfolioId(portfolioId);
+            stockPk.setTicker(stockDTO.getTicker());
+            stock.setStockPk(stockPk);
+            stock.setQuantity(stockDTO.getQuantity());
+            // System.out.println(stock);
+
+            portfolio.addStock(stock);
+            System.out.println(portfolio);
+            // stockRepo.save(stock);
+
+            response.put("message", "Stock added successfully");
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+            
+        // } catch (Exception e) {
+        //     response.put("message", "Failed to add stock");
+        //     return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
+        // }
+        
+
+        
+        
+    }
+
+    @Override
+    public ResponseEntity<String> deleteStocksFromPortfolio(int portfolioId, ArrayList<String> stockTickers) {
+        Integer count = stockTickers.size();
+        JSONObject response = new JSONObject();
+        for (String stockTicker : stockTickers) {
+            StockEntity stock = stockRepo.getOneStock(portfolioId, stockTicker);
+            System.out.print(stockTicker);
+            if (stock instanceof StockEntity) {
+                stockRepo.delete(stock);
+                count--;
+            }
+        }
+
+        if (count == 0) {
+            response.put("message", "Stock(s) deleted successfully from portfolio");
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        }
+        response.put("message", "Stocks could not be deleted from portfolio");
+        return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
+
     }
 
     @Override
@@ -37,11 +83,19 @@ public class StockServiceImplementation implements StockService{
     }
 
     @Override
-    public StockEntity editStock(StockRequestDTO stockDTO, @PathVariable int portfolioId) {
-        StockEntity stock = stockRepo.getOneStock(portfolioId, stockDTO.getTicker());
-        stock.setQuantity(stockDTO.getQuantity());
-        return stockRepo.save(stock);
+    public ResponseEntity<String> editStock(StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+        JSONObject response = new JSONObject();
+        try {
+            StockEntity stock = stockRepo.getOneStock(portfolioId, stockDTO.getTicker());
+            stock.setQuantity(stockDTO.getQuantity());
+            stockRepo.save(stock);
 
-        
+            response.put("message", "Stock edited successfully");
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+
+        } catch (Exception e) {
+            response.put("message", "Failed to update stock");
+            return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
+        }
     }
 }
