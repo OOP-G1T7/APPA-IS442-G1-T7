@@ -33,7 +33,7 @@ public class PortfolioEntity {
     @Column(name = "capital")
     private double capital;
 
-    @OneToMany(mappedBy = "portfolioEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "portfolioEntity", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
     // need to use List not ArrayList
     private List<StockEntity> stocks = new ArrayList<>();
 
