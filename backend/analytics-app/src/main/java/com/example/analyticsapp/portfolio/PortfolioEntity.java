@@ -31,32 +31,54 @@ public class PortfolioEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "portfolioEntity")
+    @Column(name = "capital")
+    private double capital;
+
+    @OneToMany(mappedBy = "portfolioEntity", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
     // need to use List not ArrayList
     private List<StockEntity> stocks = new ArrayList<>();
 
-    public void setName(String name) {
-        this.name = name;
+
+    // Getters and Setters
+
+    public int getPortfolioId() {
+        return portfolioId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
+    public void setPortfolioId(int portfolioId) {
+        this.portfolioId = portfolioId;
     }
 
     public int getUserId() {
         return userId;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String getName() {
         return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getCapital() {
+        return capital;
+    }
+
+    public void setCapital(double capital) {
+        this.capital = capital;
     }
 
     public List<StockEntity> getStocks() {
@@ -72,13 +94,6 @@ public class PortfolioEntity {
         stock.setPortfolio(this);
     }
 
-    public int getPortfolioId() {
-        return portfolioId;
-    }
-
-    public void setPortfolioId(int portfolioId) {
-        this.portfolioId = portfolioId;
-    }
 
     public String toString() {
         return "PortfolioEntity [portfolioId=" + portfolioId + ", userId=" + userId + ", name=" + name
