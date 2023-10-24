@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -63,24 +62,49 @@ export class Confirm extends Component {
                                             </Table>
                                         </TableContainer>
                                     </Grid>
+                                    <Grid container item xs={12} style={{
+                                        position: 'fixed',
+                                    }}>
+
+                                        <div style={{
+                                            position: 'fixed',
+                                            bottom: 100,
+                                            left: 100,
+                                        }}>
+                                            {stockQuantities.length !== 0 && (
+                                                <>
+                                                    <Button variant="contained">
+                                                        <ArrowBackIcon
+                                                            onClick={back}
+                                                        />
+                                                        Back
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </div>
+                                        <div style={{
+                                            position: 'fixed',
+                                            bottom: 100,
+                                            right: 100,
+                                        }}>
+                                            {stockQuantities.length !== 0 && (
+                                                <>
+                                                    <Button variant="contained">
+                                                        Next
+                                                        <ArrowForwardIcon
+                                                            onClick={continues}
+                                                        />
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </div>
+
+                                    </Grid>
                                 </>
                             )}
                         </Grid>
                     </Grid>
                 </Box>
-                <Button>
-                    <ArrowBackIcon
-                        onClick={back}
-                    />
-                    Back
-
-                </Button>
-                <Button>
-                    Next
-                    <ArrowForwardIcon
-                        onClick={continues}
-                    />
-                </Button>
             </ThemeProvider >
         );
     }

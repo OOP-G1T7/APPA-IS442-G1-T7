@@ -14,18 +14,20 @@ export class PortfolioDetails extends Component {
     handleSubmit = event => {
         event.preventDefault();
         const portfolio = {
-            userId: null,
+            userId: 1,
             name: this.props.values.portfolioName,
             description: this.props.values.portfolioDescription
         };
 
-        axios.post(`http://localhost:8080/api/portfolio`, { portfolio })
-            .then(res => {
-                console.log(res);
-                console.log(res.data);
-                this.props.continues();
-            })
+        console.log(portfolio);
+        // axios.post(`http://localhost:8080/api/portfolio`, { portfolio })
+        //     .then(res => {
+        //         console.log(res);
+        //         console.log(res.data);
+        //         this.props.continues();
+        //     })
 
+        this.props.continues();
 
     }
 
@@ -61,17 +63,30 @@ export class PortfolioDetails extends Component {
                                             onChange={handleChange("portfolioDescription")}
                                         />
                                     </Grid>
+                                    <Grid container item xs={12} style={{
+                                        position: 'fixed',
+                                        bottom: 10,
+                                        right: 10
+                                    }}>
+                                        <div style={{
+                                            position: 'fixed',
+                                            bottom: 100,
+                                            right: 100,
+                                        }}>
+                                            {values.portfolioName.length !== 0 && (
+                                                <Button type="submit" variant="contained">
+                                                    Next
+                                                    <ArrowForwardIcon />
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                    </Grid>
 
                                 </Grid>
 
                             </Grid>
-                            {values.portfolioName.length != "" && (
-                                <Button type="submit">
-                                    Next
-                                    <ArrowForwardIcon
-                                    />
-                                </Button>
-                            )}
+
                         </Box>
                     </form>
 
