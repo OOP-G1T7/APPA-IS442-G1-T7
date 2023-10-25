@@ -82,7 +82,7 @@ public class UserController {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginReq.getEmail(), loginReq.getPassword()));
             String email = authentication.getName();
-            UserEntity user = new UserEntity(email);
+            UserEntity user = userService.getUserByEmail(email);
             String token = jwtUtil.createToken(user);
             LoginRes loginRes = new LoginRes(email, token);
             ApiResponse<LoginRes> response = new ApiResponse<LoginRes>(201, "Successfully authenticated user!",
