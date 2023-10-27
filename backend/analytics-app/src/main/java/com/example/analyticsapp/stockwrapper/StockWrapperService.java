@@ -47,7 +47,7 @@ public class StockWrapperService {
         jedis.auth(username, password);
 
         // Retrieve cached data
-        String cachedData = jedis.get(stockTicker);
+        String cachedData = jedis.get("data - " + stockTicker);
 
         // Check if it has been cached
         if (cachedData != null) {
@@ -58,7 +58,7 @@ public class StockWrapperService {
             // Data is not in the cache, fetch it from the original source
             System.out.println("Date being fetched from Alpha Vantage");
 
-            String apiUrl = getStockEndpoint("data - " + stockTicker, "TIME_SERIES_DAILY");
+            String apiUrl = getStockEndpoint(stockTicker, "TIME_SERIES_DAILY");
 
             if (apiUrl != null) {
                 // Create a URL object
@@ -210,7 +210,7 @@ public class StockWrapperService {
         return result;
     }
 
-    public List<Map<String, String>> getStockListing() throws Exception{
+    public List<Map<String, String>> getStockListing() throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
 
         String fileName = "backend/data/stockListing.csv";
@@ -243,7 +243,7 @@ public class StockWrapperService {
         return result;
     }
 
-    public void getStockListingCSV() throws Exception{
+    public void getStockListingCSV() throws Exception {
 
         String fileName = "backend/data/stockListing.csv";
         File csvFile = new File(fileName);
@@ -270,7 +270,7 @@ public class StockWrapperService {
 
         if (apiUrl != null) {
             try {
-            // Create a URL object
+                // Create a URL object
                 URL url = new URL(apiUrl);
 
                 // Open a connection to the URL
@@ -288,7 +288,7 @@ public class StockWrapperService {
                     }
 
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        FileWriter fileWriter = new FileWriter(csvFile, false)) {
+                            FileWriter fileWriter = new FileWriter(csvFile, false)) {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             // Write the line to the CSV file
