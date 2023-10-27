@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/stockwrapper")
 public class StockWrapperController {
+    private String apiKey = "JGDUWG0S98HIRRTV";
 
     @GetMapping("/{stockTicker}")
     public ResponseEntity<?> getStock(@PathVariable String stockTicker) {
-        String apiKey = "4U3NNSG5OHR1CBIG";
-
         try {
             StockWrapperService stockService = new StockWrapperService(apiKey);
             List<Map<String, String>> result = stockService.getDailyStockData(stockTicker);
@@ -42,8 +41,6 @@ public class StockWrapperController {
 
     @GetMapping("/stockSearch/{search}")
     public ResponseEntity<?> searchStocks(@PathVariable String search) {
-        String apiKey = "4U3NNSG5OHR1CBIG";
-
         try {
             StockWrapperService stockService = new StockWrapperService(apiKey);
             List<Map<String, String>> result = stockService.searchStocks(search);
@@ -55,4 +52,36 @@ public class StockWrapperController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/getStockListing")
+    public ResponseEntity<?> getStockListing() {
+        try {
+            StockWrapperService stockService = new StockWrapperService(apiKey);
+            List<Map<String, String>> result = stockService.getStockListing();
+
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    // @GetMapping("/getStockListingCSV")
+    public ResponseEntity<?> getStockListingCSV() {
+        try {
+            StockWrapperService stockService = new StockWrapperService(apiKey);
+            stockService.getStockListingCSV();
+
+            System.out.println("CSV file created");
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("CSV file created");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
 }
