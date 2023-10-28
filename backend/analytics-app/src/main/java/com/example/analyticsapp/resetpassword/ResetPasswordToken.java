@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 @Table(name = "password_reset_token")
 public class ResetPasswordToken {
     
-    private static final int EXPIRATION = 60 * 24; // 24 hours
+    private static final int expiration = 60 * 24; // 24 hours
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,13 +37,13 @@ public class ResetPasswordToken {
     private Date expiryDate;
 
     public ResetPasswordToken() {
-        this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.expiryDate = calculateExpiryDate(expiration);
     }
 
     public ResetPasswordToken(String token, UserEntity user) {
         this.token = token;
         this.user = user;
-        this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.expiryDate = calculateExpiryDate(expiration);
     }
 
     private Date calculateExpiryDate(int expiryTimeInMinutes) {

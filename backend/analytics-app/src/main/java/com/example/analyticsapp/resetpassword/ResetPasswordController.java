@@ -32,13 +32,13 @@ public class ResetPasswordController {
     
 
 
-    // Not sure how we want to give the token, so function output not set yet
+    // Generates a token to be used for the api
     @PostMapping("/send-token")
     public String forgotPassword(@RequestParam String email) {
         UserEntity user = userRepo.getUserByEmail(email);
 
         if (user.equals(null)) {
-            return "No such user";
+            return null;
         }
 
         ResetPasswordToken token = resetService.createToken(user);
