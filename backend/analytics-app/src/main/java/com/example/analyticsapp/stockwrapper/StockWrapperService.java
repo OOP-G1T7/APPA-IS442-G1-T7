@@ -1,5 +1,6 @@
 package com.example.analyticsapp.stockwrapper;
 
+import com.example.analyticsapp.redis.RedisService;
 import com.example.analyticsapp.stockwrapper.util.TickerNotFoundException;
 
 import redis.clients.jedis.Jedis;
@@ -22,6 +23,8 @@ import java.util.*;
 public class StockWrapperService {
     private final String apiKey;
 
+    private RedisService redisService = new RedisService();
+
     public StockWrapperService(String apiKey) {
         this.apiKey = apiKey;
     }
@@ -29,31 +32,15 @@ public class StockWrapperService {
     public List<Map<String, String>> getDailyStockData(String stockTicker)
             throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
-
-        // Configure the Jedis connection pool for your Redis Cloud instance
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        JedisPool jedisPool = new JedisPool(poolConfig, "redis-11769.c292.ap-southeast-1-1.ec2.cloud.redislabs.com",
-                11769);
-
-        // username and password
-        String username = "default";
-        String password = "kkiwZNWzNfnH2OJH1xduyaGj1wbIt9K7";
-
         JSONObject stockData;
 
-        Jedis jedis = jedisPool.getResource();
-
-        // Authenticate to the Redis Cloud instance using your username and password
-        jedis.auth(username, password);
-
         // Retrieve cached data
-        String cachedData = jedis.get("data - " + stockTicker);
+        String cachedData = redisService.getCachedData("data - " + stockTicker);
 
         // Check if it has been cached
         if (cachedData != null) {
             System.out.println("Data being fetched from Cached memory");
             stockData = new JSONObject(cachedData.toString());
-            jedisPool.close();
         } else {
             // Data is not in the cache, fetch it from the original source
             System.out.println("Date being fetched from Alpha Vantage");
@@ -86,8 +73,7 @@ public class StockWrapperService {
                         // Parse the JSON response
                         stockData = new JSONObject(response.toString());
 
-                        // Cache the response
-                        jedis.setex("data - " + stockTicker, 3600, response.toString()); // Cache it for future use
+                        redisService.cacheData("data - " + stockTicker, response.toString());
                     }
                 } else {
                     System.out.println("API request failed with status code: " + responseCode);
@@ -126,30 +112,14 @@ public class StockWrapperService {
     public List<Map<String, String>> searchStocks(String search) throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
 
-        // Configure the Jedis connection pool for your Redis Cloud instance
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        JedisPool jedisPool = new JedisPool(poolConfig, "redis-11769.c292.ap-southeast-1-1.ec2.cloud.redislabs.com",
-                11769);
-
-        // username and password
-        String username = "default";
-        String password = "kkiwZNWzNfnH2OJH1xduyaGj1wbIt9K7";
-
-        Jedis jedis = jedisPool.getResource();
-
-        // Authenticate to the Redis Cloud instance using your username and password
-        jedis.auth(username, password);
-
         JSONObject searchResult;
 
-        // Retrieve cached data
-        String cachedData = jedis.get("search - " + search);
+        String cachedData = redisService.getCachedData("search - " + search);
 
         // Check if it has been cached
         if (cachedData != null) {
             System.out.println("Data being fetched from Cached memory");
             searchResult = new JSONObject(cachedData.toString());
-            jedisPool.close();
         } else {
             // Data is not in the cache, fetch it from the original source
             System.out.println("Date being fetched from Alpha Vantage");
@@ -181,8 +151,7 @@ public class StockWrapperService {
                         // Parse the JSON response
                         searchResult = new JSONObject(response.toString());
 
-                        // Cache the response
-                        jedis.setex("search - " + search, 3600, response.toString()); // Cache it for future use
+                        redisService.cacheData("search - " + search, response.toString());
 
                     }
                 } else {
