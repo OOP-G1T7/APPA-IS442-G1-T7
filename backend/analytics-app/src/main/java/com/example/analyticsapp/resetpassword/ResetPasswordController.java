@@ -29,21 +29,30 @@ public class ResetPasswordController {
     @Autowired
     private ResetPasswordService resetService;
 
+    @Autowired
+    private EmailService emailService;
+
     
 
 
     // Generates a token to be used for the api
     @PostMapping("/send-token")
-    public String forgotPassword(@RequestParam String email) {
+    public void forgotPassword(@RequestParam String email) {
         UserEntity user = userRepo.getUserByEmail(email);
 
+        /* 
         if (user.equals(null)) {
             return null;
         }
+        */
 
         ResetPasswordToken token = resetService.createToken(user);
         String tokenString = token.getToken();
-        return tokenString;
+
+        
+        String message = "Please click on this link to reset your password:\nlocalhost:8080/password-reset/" + tokenString;
+        emailService.sendEmail(email, "Reset Password", message);
+        
     }
 
     @PostMapping("/{token}")
