@@ -213,8 +213,14 @@ public class StockWrapperService {
     }
 
     public void getStockListingCSV() throws Exception {
+        String plannedPath = "backend";
+        File plannedPathDir = new File(plannedPath);
 
-        String fileName = "backend/data/stockListing.csv";
+        if (!plannedPathDir.exists()) {
+            plannedPath = "..";
+        }
+
+        String fileName = plannedPath + "/data/stockListing.csv";
         File csvFile = new File(fileName);
 
         if (csvFile.exists()) {
@@ -250,7 +256,7 @@ public class StockWrapperService {
                 int responseCode = connection.getResponseCode();
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    File dataFolder = new File("backend/data");
+                    File dataFolder = new File(plannedPath + "/data");
 
                     if (!dataFolder.exists()) {
                         dataFolder.mkdir();
