@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -123,11 +125,119 @@ public class StockWrapperService {
         return result;
     }
 
+    public List<Map<String, String>> getStockListing() throws Exception{
+        List<Map<String, String>> result = new ArrayList<>();
+
+        String fileName = "backend/data/stockListing.csv";
+        File csvFile = new File(fileName);
+
+        if (!csvFile.exists()) {
+            System.out.println("CSV file does not exist. Creating file...");
+            getStockListingCSV();
+        }
+
+        try (Scanner sc = new Scanner(csvFile)) {
+            // Skip the first line
+            sc.nextLine();
+
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                String[] stockData = line.split(",");
+
+                Map<String, String> stockInfo = new HashMap<>();
+                stockInfo.put("symbol", stockData[0]);
+                stockInfo.put("name", stockData[1]);
+                stockInfo.put("exchange", stockData[2]);
+                stockInfo.put("assetType", stockData[3]);
+                result.add(stockInfo);
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to read CSV file: " + e.getMessage());
+            throw e;
+        }
+        return result;
+    }
+
+    public void getStockListingCSV() throws Exception{
+
+        String fileName = "backend/data/stockListing.csv";
+        File csvFile = new File(fileName);
+
+        if (csvFile.exists()) {
+            System.out.println("CSV file already exists.");
+
+            Calendar calendar = Calendar.getInstance();
+            Date today = calendar.getTime();
+
+            // Get the first day of the current week (Sunday)
+            calendar.setTime(today);
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            long firstDayInMilliseconds = calendar.getTimeInMillis();
+
+            // If the CSV file was created on the same week, do not update
+            if (csvFile.lastModified() >= firstDayInMilliseconds) {
+                System.out.println("CSV file was created this week. No need to update.");
+                return;
+            }
+        }
+
+        String apiUrl = getStockListingEndpoint();
+
+        if (apiUrl != null) {
+            try {
+            // Create a URL object
+                URL url = new URL(apiUrl);
+
+                // Open a connection to the URL
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                // Get the response code
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    File dataFolder = new File("backend/data");
+
+                    if (!dataFolder.exists()) {
+                        dataFolder.mkdir();
+                    }
+
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        FileWriter fileWriter = new FileWriter(csvFile, false)) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // Write the line to the CSV file
+                            fileWriter.write(line);
+                            fileWriter.write("\n");
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Failed to write to CSV file: " + e.getMessage());
+                        throw e;
+                    }
+                } else {
+                    System.out.println("API request failed with status code: " + responseCode);
+                    throw new Exception("API request failed with status code: " + responseCode);
+                }
+            } catch (IOException e) {
+                System.out.println("Failed to retrieve API endpoint.");
+                throw e;
+            }
+        } else {
+            System.out.println("Invalid API endpoint.");
+            throw new Exception("Invalid API endpoint.");
+        }
+        return;
+    }
+
     public String getStockEndpoint(String stockTicker, String function) {
         return "https://www.alphavantage.co/query?function=" + function + "&symbol=" + stockTicker + "&apikey=" + apiKey;
     }
 
     public String getSearchEndpoint(String search) {
         return "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + search + "&apikey=" + apiKey;
+    }
+
+    public String getStockListingEndpoint() {
+        return "https://www.alphavantage.co/query?function=LISTING_STATUS&state=active&apikey=" + apiKey;
     }
 }
