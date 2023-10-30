@@ -13,6 +13,8 @@ import axios from "axios";
 import { useEffect } from "react";
 import Chart from 'react-apexcharts';
 import { useParams } from "react-router-dom";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 const colours = [
     "#23254D",
@@ -139,9 +141,12 @@ export default function Portfolio() {
         getPortfolioData(id);
     }, []);
 
+    const today = new Date();
+
     const [portfolioData, setPortfolioData] = React.useState(null);
     const [portfolioStockData, setPortfolioStockData] = React.useState(null);
     const [seriesData, setSeriesData] = React.useState(null);
+    const [filteredSeriesData, setFilteredSeriesData] = React.useState(null);
 
     
     const getData = async (ticker) => {
@@ -168,7 +173,6 @@ export default function Portfolio() {
             // console.log(res.data)
             setPortfolioData(res.data)
             setPortfolioStockData(res.data.stocks)
-
             let stockDataSeries = [];
             for (let key in res.data.stocks) {
                 const stock = res.data.stocks[key];
@@ -183,6 +187,7 @@ export default function Portfolio() {
                 });
             }
             setSeriesData(stockDataSeries);
+            setFilteredSeriesData(stockDataSeries);
         } catch (error) {
             if (error.message === "Portfolio not found") {
                 setPortfolioData(error.message)
@@ -191,6 +196,61 @@ export default function Portfolio() {
                 setSeriesData([])
             }
         }
+        
+    };
+
+    const getCurrentTotalValue = () => {
+        let total = 0;
+        for (let key in portfolioStockData) {
+            for (let key2 in seriesData) {
+                if (seriesData[key2].name === portfolioStockData[key].stockPk.ticker) {
+                    total += seriesData[key2].data[seriesData[key2].data.length - 1][1];
+                }
+            }
+        }
+        return total.toFixed(2);
+    }
+
+    const [seriesPeriod, setSeriesPeriod] = React.useState("10y");
+
+    const handleSeriesPeriod = (event, newSeriesPeriod) => {
+        setSeriesPeriod(newSeriesPeriod);
+        let beginningDate = '';
+
+        switch (newSeriesPeriod) {
+            case "5y":
+                beginningDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+                break;
+            case "3y":
+                beginningDate = new Date(today.getFullYear() - 3, today.getMonth(), today.getDate());
+                break;
+            case "1y":
+                beginningDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+                break;
+            case "6m":
+                beginningDate = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
+                break;
+            case "1m":
+                beginningDate = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+                break;
+            default:
+                beginningDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
+                break;
+        }
+
+        let newSeriesData = [];
+        for (let key in seriesData) {
+            let newData = seriesData[key].data.filter((data) => {
+                return data[0] >= beginningDate.getTime();
+            })
+            
+            newSeriesData.push({
+                name: seriesData[key].name,
+                data: newData,
+            });
+        }
+        setFilteredSeriesData(newSeriesData);
+        console.log(filteredSeriesData)
     };
 
     return (
@@ -228,7 +288,7 @@ export default function Portfolio() {
                         <Card variant="outlined">
                             <Box sx={{
                                 mb: 2,
-                                mx: 1,
+                                mx: 4,
                                 mt: 2
                             }}>
                                 <Typography variant="h6" gutterBottom style={{fontWeight: 'bold'}}>Description</Typography>
@@ -238,25 +298,43 @@ export default function Portfolio() {
                             </Box>
                         </Card>
                     </Grid>
-                    <Grid item container spacing={10} justifyContent={"space-between"}>
-                        <Grid item xs={12} sm={12} md={12} lg={8} xl={9}>
-                            {
-                                seriesData === null ?
-                                <Skeleton variant="rectangular" width="100%" height={500} /> 
-                                : seriesData.length === 0 ?
-                                <span style={{textAlign: 'right', width: "100%"}}>No Data</span> :
-                                <Chart
-                                    options={options}
-                                    // series={series}
-                                    series={seriesData}
-                                    type="line"
-                                    height="100%"
-                                    // width="500"
-                                    style={{
-                                        minHeight: '32rem',
-                                    }}
-                                />
-                            }
+                    <Grid item container justifyContent={"space-between"} spacing={[0, 5]}>
+                        <Grid item container xs={12} sm={12} md={12} lg={8} xl={9} spacing={3}>
+                            <Grid item xs={12} style={{height: '8vh'}}>
+                                <ToggleButtonGroup
+                                    color="info"
+                                    value={seriesPeriod}
+                                    exclusive
+                                    onChange={handleSeriesPeriod}
+                                    style={{display: 'flex', justifyContent: 'center', }}
+                                >
+                                    <ToggleButton value="10y">10 Yrs</ToggleButton>
+                                    <ToggleButton value="5y">5 Yrs</ToggleButton>
+                                    <ToggleButton value="3y">3 Yrs</ToggleButton>
+                                    <ToggleButton value="1y">1 Yr</ToggleButton>
+                                    <ToggleButton value="6m">6 mths</ToggleButton>
+                                    <ToggleButton value="1m">1 mth</ToggleButton>
+                                </ToggleButtonGroup>
+                            </Grid>
+                            <Grid item xs={12} style={{ minHeight: "25rem"}}>
+                                {
+                                    seriesData === null ?
+                                    <Skeleton variant="rectangular" width="100%" height={500} /> 
+                                    : seriesData.length === 0 ?
+                                    <span style={{textAlign: 'right', width: "100%",}}>No Data</span> :
+                                    <Chart
+                                        options={options}
+                                        // series={series}
+                                        series={filteredSeriesData}
+                                        type="line"
+                                        height="100%"
+                                        // width="500"
+                                        // style={{
+                                        //     minHeight: '25rem',
+                                        // }}
+                                    />
+                                }
+                            </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={4} xl={3} container>
                             <Card variant="outlined">
@@ -266,28 +344,34 @@ export default function Portfolio() {
                                         mx: 1,
                                         mt: 2
                                     }}>
-                                        <Grid container spacing={1}>
+                                        <Grid container spacing={1} justifyContent="center">
                                             <Grid item container justifyContent="space-between" alignItems='center' xs={12}>
-                                                <Grid item>
+                                                <Grid item xs={2}>
                                                     <Typography variant="h6" style={{fontWeight: 'bold'}}>Capital</Typography>
                                                 </Grid>
                                                 <Grid item>
                                                     <Typography variant="h6">
-                                                        $-
+                                                        ${portfolioData.capital.toFixed(2)}
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
                                             <Grid item container justifyContent="space-between" alignItems='center' xs={12}>
-                                                <Grid item>
+                                                <Grid item xs={6}>
                                                     <Typography variant="h6" style={{fontWeight: 'bold'}}>Current Total Value</Typography>
                                                 </Grid>
                                                 <Grid item>
                                                     <Typography variant="h6">
-                                                        $-
+                                                        $
+                                                        { portfolioData !== null ?
+                                                            getCurrentTotalValue() : "-"
+                                                        }
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
                                             <Grid item style={{margin: 10}} xs={12}/>
+                                            <Grid item style={{margin: 10}} xs={12}>
+                                                <Typography variant="h5" style={{fontWeight: 'bold', textAlign: "center"}}>Quantity</Typography>
+                                            </Grid>
                                             <Grid item xs={12} sm={6} md={12}>
                                                 <PieChart
                                                     colors={colours}
@@ -318,8 +402,8 @@ export default function Portfolio() {
                                                     height={200}
                                                     />
                                             </Grid>
-                                            <Grid item style={{margin: 10}} xs={12}/>  
-                                            <Grid item container spacing={2} alignItems='flex-start' justifyContent='center' xs={12} sm={6} md>
+                                            {/* <Grid item style={{margin: 10}} xs={12}/>   */}
+                                            <Grid item container spacing={2} alignItems='flex-start' justifyContent='center' xs={12} sm={6} md sx={{my: 2}}>
                                                 { portfolioStockData === null ? <>Loading...</> :
                                                 portfolioStockData.map((stock, key) => {
                                                     return (
