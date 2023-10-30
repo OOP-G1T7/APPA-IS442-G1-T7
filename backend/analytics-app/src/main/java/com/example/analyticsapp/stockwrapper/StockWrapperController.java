@@ -26,13 +26,15 @@ public class StockWrapperController {
             List<Map<String, String>> result = stockService.getDailyStockData(stockTicker);
 
             return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(result);
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(result);
         } catch (TickerNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (MalformedURLException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -44,8 +46,8 @@ public class StockWrapperController {
             List<Map<String, String>> result = stockService.searchStocks(search);
 
             return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(result);
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

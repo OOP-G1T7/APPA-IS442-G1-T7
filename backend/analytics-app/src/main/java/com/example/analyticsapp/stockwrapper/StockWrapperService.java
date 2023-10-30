@@ -1,6 +1,11 @@
 package com.example.analyticsapp.stockwrapper;
 
+import com.example.analyticsapp.redis.RedisService;
 import com.example.analyticsapp.stockwrapper.util.TickerNotFoundException;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,114 +23,163 @@ import java.util.*;
 public class StockWrapperService {
     private final String apiKey;
 
+    private RedisService redisService = new RedisService();
+
     public StockWrapperService(String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public List<Map<String, String>> getDailyStockData(String stockTicker) throws TickerNotFoundException, MalformedURLException, IOException {
+    public List<Map<String, String>> getDailyStockData(String stockTicker)
+            throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
+        JSONObject stockData;
 
-        String apiUrl = getStockEndpoint(stockTicker, "TIME_SERIES_DAILY");
+        // Retrieve cached data
+        String cachedData = redisService.getCachedData("data - " + stockTicker);
 
-        if (apiUrl != null) {
-            // Create a URL object
-            URL url = new URL(apiUrl);
+        // Check if it has been cached
+        if (cachedData != null) {
+            System.out.println("Data being fetched from Cached memory");
+            stockData = new JSONObject(cachedData.toString());
+        } else {
+            // Data is not in the cache, fetch it from the original source
+            System.out.println("Date being fetched from Alpha Vantage");
 
-            // Open a connection to the URL
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+            String apiUrl = getStockEndpoint(stockTicker, "TIME_SERIES_DAILY");
 
-            // Get the response code
-            int responseCode = connection.getResponseCode();
+            if (apiUrl != null) {
+                // Create a URL object
+                URL url = new URL(apiUrl);
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Read the response data
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    StringBuilder response = new StringBuilder();
-                    String line;
+                // Open a connection to the URL
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
 
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
+                // Get the response code
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Read the response data
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(connection.getInputStream()))) {
+
+                        StringBuilder response = new StringBuilder();
+                        String line;
+
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+
+                        // Parse the JSON response
+                        stockData = new JSONObject(response.toString());
+
+                        redisService.cacheData("data - " + stockTicker, response.toString());
                     }
-
-                    // Parse the JSON response
-                    JSONObject stockData = new JSONObject(response.toString());
-
-                    // API returned an error message
-                    if (stockData.has("Error Message")) {
-                        throw new TickerNotFoundException(stockTicker);
-                    }
-
-                    JSONObject timeSeries = stockData.getJSONObject("Time Series (Daily)");
-
-                    for (String dateStr : timeSeries.keySet()) {
-                        JSONObject timeData = timeSeries.getJSONObject(dateStr);
-                        String closingPrice = timeData.getString("4. close");
-
-                        Map<String, String> dataPoint = new HashMap<>();
-                        dataPoint.put("date", dateStr);
-                        dataPoint.put("close", closingPrice);
-                        result.add(dataPoint);
-                    }
+                } else {
+                    System.out.println("API request failed with status code: " + responseCode);
+                    // NEED TO THROW ERROR
+                    throw new Exception();
                 }
             } else {
-                System.out.println("API request failed with status code: " + responseCode);
+                System.out.println("Failed to retrieve API endpoint.");
+                // NEED TO THROW ERROR
+                throw new Exception();
             }
-        } else {
-            System.out.println("Failed to retrieve API endpoint.");
+
+        }
+
+        // API returned an error message
+        if (stockData.has("Error Message")) {
+            throw new TickerNotFoundException(stockTicker);
+        }
+
+        JSONObject timeSeries = stockData.getJSONObject("Time Series (Daily)");
+
+        // Prepare data to return
+        for (String dateStr : timeSeries.keySet()) {
+            JSONObject timeData = timeSeries.getJSONObject(dateStr);
+            String closingPrice = timeData.getString("4. close");
+
+            Map<String, String> dataPoint = new HashMap<>();
+            dataPoint.put("date", dateStr);
+            dataPoint.put("close", closingPrice);
+            result.add(dataPoint);
         }
 
         return result;
     }
 
-    public List<Map<String, String>> searchStocks(String search) throws Exception{
+    public List<Map<String, String>> searchStocks(String search) throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
 
-        String apiUrl = getSearchEndpoint(search);
+        JSONObject searchResult;
 
-        if (apiUrl != null) {
-            // Create a URL object
-            URL url = new URL(apiUrl);
+        String cachedData = redisService.getCachedData("search - " + search);
 
-            // Open a connection to the URL
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+        // Check if it has been cached
+        if (cachedData != null) {
+            System.out.println("Data being fetched from Cached memory");
+            searchResult = new JSONObject(cachedData.toString());
+        } else {
+            // Data is not in the cache, fetch it from the original source
+            System.out.println("Date being fetched from Alpha Vantage");
 
-            // Get the response code
-            int responseCode = connection.getResponseCode();
+            String apiUrl = getSearchEndpoint(search);
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Read the response data
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    StringBuilder response = new StringBuilder();
-                    String line;
+            if (apiUrl != null) {
+                // Create a URL object
+                URL url = new URL(apiUrl);
 
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
+                // Open a connection to the URL
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                // Get the response code
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Read the response data
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(connection.getInputStream()))) {
+                        StringBuilder response = new StringBuilder();
+                        String line;
+
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+
+                        // Parse the JSON response
+                        searchResult = new JSONObject(response.toString());
+
+                        redisService.cacheData("search - " + search, response.toString());
+
                     }
-
-                    // Parse the JSON response
-                    JSONObject searchResult = new JSONObject(response.toString());
-                    JSONArray bestMatches = searchResult.getJSONArray("bestMatches");
-
-                    for (int i = 0; i < bestMatches.length(); i++) {
-                        JSONObject stockInfo = bestMatches.getJSONObject(i);
-                        Map<String, String> stockData = new HashMap<>();
-                        stockData.put("symbol", stockInfo.getString("1. symbol"));
-                        stockData.put("name", stockInfo.getString("2. name"));
-                        result.add(stockData);
-                    }
+                } else {
+                    System.out.println("API request failed with status code: " + responseCode);
+                    // NEED THROW
+                    throw new Exception();
                 }
             } else {
-                System.out.println("API request failed with status code: " + responseCode);
+                System.out.println("Failed to retrieve API endpoint.");
+                // NEED THROW
+                throw new Exception();
             }
-        } else {
-            System.out.println("Failed to retrieve API endpoint.");
         }
+
+        JSONArray bestMatches = searchResult.getJSONArray("bestMatches");
+
+        for (int i = 0; i < bestMatches.length(); i++) {
+            JSONObject stockInfo = bestMatches.getJSONObject(i);
+            Map<String, String> stockData = new HashMap<>();
+            stockData.put("symbol", stockInfo.getString("1. symbol"));
+            stockData.put("name", stockInfo.getString("2. name"));
+            result.add(stockData);
+        }
+
         return result;
     }
 
-    public List<Map<String, String>> getStockListing() throws Exception{
+    public List<Map<String, String>> getStockListing() throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
 
         String fileName = "backend/data/stockListing.csv";
@@ -158,7 +212,7 @@ public class StockWrapperService {
         return result;
     }
 
-    public void getStockListingCSV() throws Exception{
+    public void getStockListingCSV() throws Exception {
 
         String fileName = "backend/data/stockListing.csv";
         File csvFile = new File(fileName);
@@ -185,7 +239,7 @@ public class StockWrapperService {
 
         if (apiUrl != null) {
             try {
-            // Create a URL object
+                // Create a URL object
                 URL url = new URL(apiUrl);
 
                 // Open a connection to the URL
@@ -203,7 +257,7 @@ public class StockWrapperService {
                     }
 
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        FileWriter fileWriter = new FileWriter(csvFile, false)) {
+                            FileWriter fileWriter = new FileWriter(csvFile, false)) {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             // Write the line to the CSV file
@@ -230,7 +284,8 @@ public class StockWrapperService {
     }
 
     public String getStockEndpoint(String stockTicker, String function) {
-        return "https://www.alphavantage.co/query?function=" + function + "&symbol=" + stockTicker + "&apikey=" + apiKey;
+        return "https://www.alphavantage.co/query?function=" + function + "&symbol=" + stockTicker + "&apikey="
+                + apiKey;
     }
 
     public String getSearchEndpoint(String search) {
