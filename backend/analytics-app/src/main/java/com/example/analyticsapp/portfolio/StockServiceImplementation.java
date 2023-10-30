@@ -38,8 +38,8 @@ public class StockServiceImplementation implements StockService {
             // System.out.println(stock);
 
             portfolio.addStock(stock);
-            System.out.println(portfolio);
-            // stockRepo.save(stock);
+            // System.out.println(portfolio);
+            stockRepo.save(stock);
 
             response.put("message", "Stock added successfully");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
