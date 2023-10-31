@@ -1,5 +1,6 @@
 package com.example.analyticsapp.stockwrapper;
 
+import com.example.analyticsapp.common.ApiResponse;
 import com.example.analyticsapp.stockwrapper.util.*;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -19,25 +20,52 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockWrapperController {
     private String apiKey = "JGDUWG0S98HIRRTV";
 
-    @GetMapping("/{stockTicker}")
+    @GetMapping("/dailyStock/{stockTicker}")
     public ResponseEntity<?> getStock(@PathVariable String stockTicker) {
         try {
             StockWrapperService stockService = new StockWrapperService(apiKey);
             List<Map<String, String>> result = stockService.getDailyStockData(stockTicker);
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(result);
+            ApiResponse<List<Map<String, String>>> response = new ApiResponse<>(HttpStatus.OK.value(), "Success", result);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (TickerNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Ticker not found", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (MalformedURLException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Bad request", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Bad request", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    @GetMapping("/monthlyStock/{stockTicker}")
+    public ResponseEntity<?> getMonthlyStock(@PathVariable String stockTicker) {
+        try {
+            StockWrapperService stockService = new StockWrapperService(apiKey);
+            List<Map<String, String>> result = stockService.getMonthlyStockData(stockTicker);
+
+            ApiResponse<List<Map<String, String>>> response = new ApiResponse<>(HttpStatus.OK.value(), "Success", result);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (TickerNotFoundException e) {
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Ticker not found", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (MalformedURLException e) {
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Bad request", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (IOException e) {
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Bad request", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
 
     @GetMapping("/stockSearch/{search}")
     public ResponseEntity<?> searchStocks(@PathVariable String search) {
