@@ -21,7 +21,7 @@ public class StockRequestDTO {
     public double getProportion() {
         return proportion;
     }
-    public void setProportion(float proportion) {
+    public void setProportion(double proportion) {
         this.proportion = proportion;
     }
 

@@ -77,7 +77,7 @@ public class PortfolioController {
     }
 
     @PutMapping("/portfolio/stock/{portfolioId}")
-    public ResponseEntity<String> editStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+    public ResponseEntity<String> editStock(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         return stockService.editStock(stockDTO, portfolioId);
     }
 
