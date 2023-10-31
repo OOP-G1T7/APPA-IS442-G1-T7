@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin(origins =  "*" )
 @RequestMapping("/api")
 public class PortfolioController {
 
@@ -51,7 +53,7 @@ public class PortfolioController {
     }
 
     @PostMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<String> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO,
+    public ResponseEntity<String> addStockToPortfolio(@RequestBody ArrayList<StockRequestDTO> stockDTO,
             @PathVariable int portfolioId) {
         return stockService.addStockToPortfolio(stockDTO, portfolioId);
     }
@@ -75,7 +77,7 @@ public class PortfolioController {
     }
 
     @PutMapping("/portfolio/stock/{portfolioId}")
-    public ResponseEntity<String> editStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+    public ResponseEntity<String> editStock(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         return stockService.editStock(stockDTO, portfolioId);
     }
 
