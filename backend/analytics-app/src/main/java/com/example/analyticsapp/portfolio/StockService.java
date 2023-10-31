@@ -9,7 +9,7 @@ public interface StockService {
 
     ArrayList<StockEntity> retrieveAllStocks(int portfolioId);
 
-    ResponseEntity<String> addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId);
+    ResponseEntity<String> addStockToPortfolio(ArrayList<StockRequestDTO> stockDTO, int portfolioId);
 
     ResponseEntity<String> deleteStocksFromPortfolio(int portfolioId, ArrayList<String> stockTickers);
 

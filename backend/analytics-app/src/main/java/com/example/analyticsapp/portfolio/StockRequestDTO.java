@@ -3,7 +3,7 @@ package com.example.analyticsapp.portfolio;
 public class StockRequestDTO {
     // private int portfolioId;
     private String ticker;
-    private int quantity;
+    private double proportion;
 
 
     // public int getPortfolioId() {
@@ -18,11 +18,11 @@ public class StockRequestDTO {
     public void setTicker(String ticker) {
         this.ticker = ticker;
     }
-    public int getQuantity() {
-        return quantity;
+    public double getProportion() {
+        return proportion;
     }
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setProportion(float proportion) {
+        this.proportion = proportion;
     }
 
 }

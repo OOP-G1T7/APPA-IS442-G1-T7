@@ -16,8 +16,8 @@ public class StockEntity {
     @EmbeddedId
     private StockPK stockPk;
 
-    @Column(name = "quantity")
-    private int quantity;
+    @Column(name = "proportion")
+    private double proportion;
 
     @OneToOne
     @MapsId("portfolioId")
@@ -32,17 +32,17 @@ public class StockEntity {
         this.stockPk = stockPk;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public double getProportion() {
+        return proportion;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setProportion(double proportion) {
+        this.proportion = proportion;
     }
 
     @Override
     public String toString() {
-        return "StockEntity [stockPk=" + stockPk + ", quantity=" + quantity + "]";
+        return "StockEntity [stockPk=" + stockPk + ", proportion=" + proportion + "]";
     }
     public void setPortfolio(PortfolioEntity portfolioEntity) {
         this.portfolioEntity = portfolioEntity;
