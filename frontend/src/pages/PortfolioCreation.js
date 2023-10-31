@@ -20,6 +20,8 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Navbar from '../components/Navbar';
 import axios from "axios";
+import './styles.css';
+const Swal = require("sweetalert2");
 
 
 export default function Portfolio() {
@@ -31,13 +33,7 @@ export default function Portfolio() {
     const [portfolioDescription, setPortfolioDescription] = useState('');
     const [portfolioCapital, setPortfolioCapital] = useState('');
 
-    // Initialize the total variable
     let totalProportion = 0;
-
-    // Map through the selected equities and calculate the total proportion
-
-
-    // Now 'totalProportion' contains the sum of all proportions
 
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -47,13 +43,10 @@ export default function Portfolio() {
     };
 
     const handleAutocompleteSearch = (event, value) => {
-        // Implement search logic
         const filteredOptions = allEquities.filter(option => (
             option.symbol.toLowerCase().includes(value.toLowerCase()) ||
             option.name.toLowerCase().includes(value.toLowerCase())
         ));
-
-        // Update loadedEquities state with the new options
         setLoadedEquities(filteredOptions.slice(0, 10));
     };
 
@@ -65,21 +58,69 @@ export default function Portfolio() {
         const headers = {
             Authorization: `Bearer ${bearerToken}`
         };
+        let errors = [];
+        for (let i = 0; i < selectedTickers.length; i++) {
+            totalProportion += selectedTickers[i].proportion;
+        }
+        if (totalProportion === 1 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
+            axios.post(`/api/portfolio`, {
+                userId: 1,
+                name: portfolioName,
+                description: portfolioDescription,
+                capital: portfolioCapital
+            }, { headers })
+                .then(res => {
+                    console.log(res);
+                    let portfolioId = res.data["portfolioId"];
+                    if (portfolioId !== 0) {
+                        axios.post(`/api/portfolio/${portfolioId}`, selectedTickers, { headers })
+                            .then(res => {
+                                console.log(res);
+                                window.location.href = `/Portfolio/${portfolioId}`;
 
-        axios.post(`http://localhost:8080/api/portfolio`, {
-            userId: 1,
-            name: portfolioName,
-            description: portfolioDescription,
-            capital: portfolioCapital
-        }, { headers })
-            .then(res => {
-                console.log(res);
-                console.log(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
 
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Unable to create portfolio",
+                    });
+                });
+        }
+        else {
+            let errorsList = '';
+
+            if (totalProportion != 1) {
+                errorsList += "<li>Stocks' proportions do not add up to 1</li>";
+            }
+            if (portfolioCapital == '') {
+                errorsList += "<li>Portfolio capital empty</li>";
+            }
+            if (portfolioDescription == '') {
+                errorsList += "<li>Portfolio description empty</li>";
+            }
+            if (portfolioName == '') {
+                errorsList += "<li>Portfolio name empty</li>";
+            }
+            if (selectedTickers.length == 0) {
+                errorsList += "<li>No stocks added</li>";
+            }
+
+            if (errorsList !== '') {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    html: `<ul style="text-align: left;font-family: "Inter";">${errorsList}</ul>`,
+                });
+            }
+        }
 
     };
 
@@ -90,7 +131,6 @@ export default function Portfolio() {
             const res = await axios.get("/api/stockwrapper/getStockListing", {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            console.log(res.data)
             setAllEquities(res.data);
             setLoadedEquities(res.data.slice(0, 10));
         } catch (error) {
@@ -101,14 +141,14 @@ export default function Portfolio() {
     const handleTickers = (tickerObj) => {
         const updatedArray = selectedTickers.map(item => {
             if (item.ticker === tickerObj.ticker) {
-                return { ...item, proportion: tickerObj.proportion };
+                return { ...item, proportion: parseFloat(tickerObj.proportion) };
             }
             return item;
         });
 
         const existingObject = updatedArray.find(item => item.ticker === tickerObj.ticker);
         if (!existingObject) {
-            updatedArray.push({ ticker: tickerObj.ticker, proportion: tickerObj.proportion });
+            updatedArray.push({ ticker: tickerObj.ticker, proportion: parseFloat(tickerObj.proportion) });
         }
 
         setSelectedTickers(updatedArray);
@@ -182,7 +222,6 @@ export default function Portfolio() {
                                     <TextField id="outlined-basic" variant="outlined"
                                         multiline
                                         rows={4}
-                                        maxRows={Infinity}
                                         style={{ width: "80%" }}
                                         onChange={(event) => setPortfolioDescription(event.target.value)}
                                     />
@@ -202,7 +241,8 @@ export default function Portfolio() {
                                                         {selectedEquities.map((equity) => (
                                                             <TableRow key={equity.name}>
                                                                 <TableCell><b>{equity.name}</b></TableCell>
-                                                                <TableCell><TextField type="number"
+                                                                <TableCell><TextField
+                                                                    step=".01"
                                                                     label="Proportion"
                                                                     id={equity.symbol}
                                                                     onChange={(event) =>
