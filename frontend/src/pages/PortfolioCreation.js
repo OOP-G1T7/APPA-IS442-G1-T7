@@ -20,7 +20,6 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Navbar from '../components/Navbar';
 import axios from "axios";
-import './styles.css';
 const Swal = require("sweetalert2");
 
 
