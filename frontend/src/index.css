@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.sweet-alert-font {
+  font-family: 'Inter', sans-serif;
+  /* Wrap font name in single quotes */
+}
+
+.sweet-alert-button {
+  background-color: #0D4EA6;
+  /* Removed quotes around color */
+  color: #FFFFFF;
+  /* Removed quotes around color */
+}
