@@ -48,7 +48,7 @@ export default function SignInSide() {
       .post(`http://localhost:8080/api/user/login`, userRequest)
       .then((res) => {
 
-        window.location.href = "/Home";
+        window.location.href = "/Portfolio";
 
       })
       .catch(function (error) {
