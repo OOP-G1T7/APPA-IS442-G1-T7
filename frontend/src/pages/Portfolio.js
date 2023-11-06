@@ -15,6 +15,7 @@ import Chart from 'react-apexcharts';
 import { useParams } from "react-router-dom";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { useNavigate } from "react-router-dom";
 
 const colours = [
     "#23254D",
@@ -253,6 +254,13 @@ export default function Portfolio() {
         console.log(filteredSeriesData)
     };
 
+
+    let navigate = useNavigate();
+
+    function handleClick() {
+        navigate("/Portfolio/"+id+"/Edit");
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <Navbar></Navbar>
@@ -281,7 +289,7 @@ export default function Portfolio() {
                             <Typography variant="h4" gutterBottom>{portfolioData.name}</Typography>
                         </Grid>
                         <Grid item>
-                            <Button variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
+                            <Button onClick={handleClick} variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
                         </Grid>
                     </Grid>
                     <Grid item>
