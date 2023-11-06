@@ -15,6 +15,14 @@ import Chart from 'react-apexcharts';
 import { useParams } from "react-router-dom";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Modal from '@mui/material/Modal';
+import ErrorOutlineTwoToneIcon from '@mui/icons-material/ErrorOutlineTwoTone';
+import { useNavigate } from "react-router-dom";
+import LoadingButton from '@mui/lab/LoadingButton';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const colours = [
     "#23254D",
@@ -132,10 +140,24 @@ const options = {
     ],
 };
 
-const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtdXN5YWZmYXE5QGdtYWlsLmNvbSIsImV4cCI6MTkxNDA1MjYyNn0.ze1n-N7sOvZ2sNlScPXXbcTv4TG1M63dA3Ibd9FIxHA';
+const modalStyle = {
+    position: 'absolute',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid lightgrey',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 2,
+};
 
 export default function Portfolio() {
     const { id } = useParams();
+
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
 
     useEffect(() => {
         getPortfolioData(id);
@@ -253,6 +275,34 @@ export default function Portfolio() {
         console.log(filteredSeriesData)
     };
 
+    const [open, setOpen] = React.useState(false);
+    const [deleteError,  setDeleteError] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
+    const [openSuccss, setOpenSuccess] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const handleDelete = async () => {
+        try {
+            setLoading(true);
+            await axios.delete("/api/portfolio/" + id, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            setTimeout(() => {
+                setLoading(false);
+                setOpen(false);
+                setOpenSuccess(true);
+            }
+            , 3000);
+
+            setTimeout(() => {
+                // setOpenSuccess(false);
+                navigate("/Home");
+            }, 5000);
+        } catch (error) {
+            setDeleteError(error.response.data.message)
+        }
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <Navbar></Navbar>
@@ -280,8 +330,75 @@ export default function Portfolio() {
                         <Grid item>
                             <Typography variant="h4" gutterBottom>{portfolioData.name}</Typography>
                         </Grid>
-                        <Grid item>
+                        <Grid item >
                             <Button variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
+                            <Tooltip title="Delete">
+                                <IconButton onClick={handleOpen}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+
+                            <Modal
+                                open={openSuccss}
+                                onClose={handleClose}
+                                aria-labelledby="delte-portfolio-modal-title"
+                                aria-describedby="delte-portfolio-modal-description"
+                            >
+                                <Box sx={modalStyle}>
+                                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                                        <CheckCircleIcon sx={{color: 'green', mr: 1}}/>
+                                        Deletion Success
+                                    </Typography>
+                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                        The portfolio has been successfully deleted. <br />
+                                        Redicting you back to the home page...
+                                        <LoadingButton loading />
+                                    </Typography>
+                                </Box>
+                            </Modal>
+
+                            <Modal
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="delte-portfolio-modal-title"
+                                aria-describedby="delte-portfolio-modal-description"
+                            >
+                                <Box sx={modalStyle}>
+                                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                                        <ErrorOutlineTwoToneIcon sx={{color: 'orange', mr: 1}}/>
+                                        Are you sure?
+                                    </Typography>
+                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                        Once you delete, you can never restore it.
+                                    </Typography>
+
+                                    <Grid container justifyContent="flex-end" sx={{mt: 2}} spacing={1}>
+                                        <Grid item>
+                                            <Button variant="outlined" onClick={handleClose}>Cancel</Button>
+                                        </Grid>
+                                        <Grid item>
+                                            {/* <Button variant="contained" onClick={handleDelete}  color="error"disabled={loading}>
+                                                
+                                                Confirm Delete
+                                            </Button> */}
+                                            <LoadingButton
+                                                onClick={handleDelete}
+                                                loading={loading}
+                                                loadingPosition="start"
+                                                variant="contained"
+                                                color="error"
+                                                startIcon={<DeleteIcon />}
+                                                >
+                                                <span>Confirm Delete</span>
+                                            </LoadingButton>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container justifyContent="flex-end" sx={{mt: 2}}>
+                                        <Typography variant="body2" sx={{color: 'red'}}>{deleteError}</Typography>
+                                    </Grid>
+                                </Box>
+                            </Modal>
+                            
                         </Grid>
                     </Grid>
                     <Grid item>

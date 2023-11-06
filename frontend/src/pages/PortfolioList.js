@@ -13,6 +13,19 @@ import CardContent from '@mui/material/CardContent';
 import { CardActionArea } from '@mui/material';
 import Link from '@mui/material/Link';
 import axios from 'axios';
+import jwt from "jwt-decode";
+import { PieChart } from '@mui/x-charts/PieChart';
+
+const colours = [
+    "#23254D",
+    "#0D4EA6",
+    "#48B8F0",
+    "#279C9C",
+    "#077D55",
+    "#D9A514",
+    "#E86427",
+    "#AC71F0"
+]
 
 function PortfolioCard(props) {
     const { portfolio } = props;
@@ -21,29 +34,47 @@ function PortfolioCard(props) {
             <CardActionArea>
             <Link href={`/Portfolio/${portfolio.portfolioId}`} underline="none" color='inherit'>
             <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                {portfolio.name}
-                </Typography>
+                <Grid container spacing={1} direction="row" justifyContent="space-between">
+                    <Grid item xs sm={6}>
+                        <Typography gutterBottom variant="h5" component="div">
+                        {portfolio.name}
+                        </Typography>
 
-                <Typography variant="body2" color="text.secondary">
-                    <Grid container spacing={1} direction={"column"}>
-                        <Grid item>
-                        {portfolio.description}
-                        </Grid>
-                        <Grid item container spacing={0} direction="column">
-                            {
-                                // iterate through stocks
-                                portfolio.stocks.map((stock) => {
-                                    return (
-                                        <Grid item xs={6}>
-                                        {stock.stockPk.ticker}: {stock.quantity}
-                                    </Grid>
-                                    )
-                                })
-                            }
-                        </Grid>
+                        <Typography variant="body2" color="text.secondary">
+                            {portfolio.description}
+                        </Typography>
                     </Grid>
-                </Typography>
+
+                    <Grid item xs sm={4}>
+                        <PieChart
+                            colors={colours}
+                            margin={{top: 0, bottom: 0, left: 10, right:0}}
+                            series={[
+                                {
+                                    data: portfolio.stocks.map((stock, key) => {
+                                            return { 
+                                                id: key,
+                                                value: stock.proportion,
+                                                label: stock.stockPk.ticker,
+                                            }
+                                        })
+                                },
+                            ]}
+                            slotProps={{
+                                legend: {
+                                    direction: 'row',
+                                    labelStyle: {
+                                        fontSize: 0,
+                                        fill: 'black',
+                                    },
+                                    itemMarkWidth: 0,
+                                    itemMarkHeight: 0
+                                },
+                            }}
+                            height={100}
+                        />
+                    </Grid>
+                </Grid>
             </CardContent>
             </Link>
             </CardActionArea>
@@ -51,13 +82,12 @@ function PortfolioCard(props) {
     );
 }
 
-const userID = "1";
-
-const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtdXN5YWZmYXE5QGdtYWlsLmNvbSIsImV4cCI6MTkxNDA1MjYyNn0.ze1n-N7sOvZ2sNlScPXXbcTv4TG1M63dA3Ibd9FIxHA';
-
 export default function PortfolioList() {
+    const token = sessionStorage.getItem("token");
+    const decoded = jwt(token);
+
     React.useEffect(() => {
-        getPortfolios();
+        getPortfolios(decoded.jti);
     }, []);
 
     let navigate = useNavigate();
@@ -68,9 +98,9 @@ export default function PortfolioList() {
 
     const [portfolios, setPortfolios] = React.useState([]);
 
-    const getPortfolios = async () => {
+    const getPortfolios = async (userId) => {
         try {
-            const response = await axios.get('/api/portfolios/' + userID, {
+            const response = await axios.get('/api/portfolios/' + 1, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPortfolios(response.data);
@@ -79,6 +109,11 @@ export default function PortfolioList() {
             console.error(error);
         }
     };
+
+    const [dataLoaded, setDataLoaded] = React.useState(false);
+    setTimeout(() => {
+        setDataLoaded(true);
+    }, 1000);
 
     return (
         <>
@@ -100,7 +135,7 @@ export default function PortfolioList() {
                             direction="row"
                             justifyContent="space-between"
                         >
-                            <Grid item xs={5}>
+                            <Grid item xs>
                                 <Typography variant="h4" gutterBottom>Your Portfolios</Typography>
                             </Grid>
                             <Grid item xs={12} sm={5} md={3} lg={2} style={{display: "flex"}}>
@@ -110,18 +145,24 @@ export default function PortfolioList() {
                                 </Button>
                             </Grid>
                         </Grid>
-                        <Grid item minHeight={100} container spacing={2} justifyContent="space-between">
-                            { portfolios.length > 0 ?
-                                portfolios.map((portfolio) => {
+                        { portfolios.length > 0 && dataLoaded?
+                            <Grid item minHeight={100} container spacing={2} justifyContent="start">
+                                {portfolios.map((portfolio) => {
                                     return (
                                         <Grid item xs={12} md={6} lg={4}>
                                         <PortfolioCard portfolio={portfolio}></PortfolioCard>
                                         </Grid>
                                     )
-                                })
-                                : <Typography variant="body1" color="text.secondary" align="center">You have no existing portfolios</Typography>
-                            }
-                        </Grid>
+                                })}
+                            </Grid> : 
+                            dataLoaded ?
+                            <Grid item minHeight={100} justifyContent="space-between">
+                                <Typography variant="body1" color="text.secondary" align="center">You have no existing portfolios</Typography>
+                            </Grid> :
+                            <Grid item minHeight={100} justifyContent="space-between">
+                                <Typography variant="body1" color="text.secondary" align="center">Loading...</Typography>
+                            </Grid>
+                        }
                     </Grid>
                 </Box>
                 {/* <Button onClick={handleClick} color='button' style={{ textTransform: 'none' }}>Create a new portfolio</Button> */}
