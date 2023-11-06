@@ -15,14 +15,18 @@ import Grid from '@mui/material/Grid';
 export default function Navbar() {
     let navigate = useNavigate();
 
-    function redirectPortfolio() {
-        navigate("/Portfolio");
-    }
+    // function redirectPortfolio() {
+    //     navigate("/Portfolio");
+    // }
     function redirectHome() {
         navigate("/Home");
     }
     function redirectLogout() {
         navigate("/Logout");
+    }
+
+    function redirectGoldmanSachs() {
+        window.open("https://www.goldmansachs.com/", { target: "_blank" });
     }
     return (
         <ThemeProvider theme={theme}>
@@ -30,10 +34,10 @@ export default function Navbar() {
                 <AppBar position="static">
                     <Grid container spacing={2}>
                         <Grid item>
-                            <Typography><Button onClick={redirectHome} color='buttonFontColor' style={{ textTransform: 'none' }}>Goldman Sachs</Button></Typography>
+                            <Typography><Button onClick={redirectGoldmanSachs} color='buttonFontColor' style={{ textTransform: 'none' }}>Goldman Sachs</Button></Typography>
                         </Grid>
                         <Grid item>
-                            <Typography><Button onClick={redirectPortfolio} color='buttonFontColor' style={{ textTransform: 'none' }}>Portfolio</Button></Typography>
+                            <Typography><Button onClick={redirectHome} color='buttonFontColor' style={{ textTransform: 'none' }}>Home</Button></Typography>
                         </Grid>
                         <Grid item>
                             <Typography><Button onClick={redirectLogout} color='buttonFontColor' style={{ textTransform: 'none' }}>Logout</Button></Typography>

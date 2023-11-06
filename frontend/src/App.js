@@ -21,11 +21,11 @@ function App() {
           <Route index element={<SignIn />} />
           <Route path="/SignIn" element={<SignIn />} />
           <Route path="/SignUp" element={<SignUp />} />
-          <Route path="/Home" element={<RouteGuard element={<Home />} />} />
-          <Route
+          <Route path="/Home" element={<RouteGuard element={<PortfolioList />} />} />
+          {/* <Route
             path="/Portfolio"
             element={<RouteGuard element={<PortfolioList />} />}
-          />
+          /> */}
           <Route
             path="/Portfolio/:id"
             element={<RouteGuard element={<Portfolio />} />}
