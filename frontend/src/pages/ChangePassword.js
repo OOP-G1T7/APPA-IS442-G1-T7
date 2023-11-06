@@ -19,7 +19,7 @@ const Swal = require("sweetalert2");
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+    <Typography variant="body2" color="textSecondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
         APPA
@@ -30,56 +30,46 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
-export default function SignUpSide() {
+export default function ChangePassword() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    
-    const userRequest = {
+
+    const changePasswordRequest = {
       email: data.get("email"),
-      password: data.get("password"),
-      passwordConfirm:data.get("passwordConfirm")
+      passwordCurrent: data.get("passwordCurrent"),
+      passwordNew: data.get("passwordNew"),
+      passwordConfirm: data.get("passwordConfirm"),
     };
 
-    console.log(userRequest);
-
     axios
-      .post(`http://localhost:8080/api/user/register`, userRequest)
+      .post(`http://localhost:8080/api/user/change-password`, changePasswordRequest)
       .then((res) => {
-
-        const responseData = res.data; 
+        const responseData = res.data;
 
         Swal.fire({
-          title: responseData.message,
+          title: "Your Password has been changed!",
+          text: "Use your new password the next time you log in!",
           icon: 'success',
           showCloseButton: true,
           focusConfirm: true,
-          confirmButtonText:
-            'Sign In',
+          confirmButtonText: 'OK',
         }).then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-          if (result.isConfirmed) {
-            window.location.href = "/SignIn";
-          }
-        })
+          // You can perform additional actions after showing the success message.
+          window.location.href = "/Account";
+        });
       })
       .catch(function (error) {
         if (error.response) {
-          // The server responded with an error
           const errorMessage = error.response.data.message;
-          console.log(errorMessage);
-    
           Swal.fire({
             icon: "error",
             title: "Oops...",
             text: errorMessage,
           });
         } else {
-          // Network error or something went wrong with the request
           console.log(error.message);
         }
       });
@@ -130,30 +120,28 @@ export default function SignUpSide() {
                 value="jenniferwilliams89@gmail.com"
                 autoComplete="email"
                 autoFocus
-                inputProps={
-                  { readOnly: true, }
-                }
-                sx={{color:grey}}
+                inputProps={{
+                  readOnly: true,
+                }}
+                sx={{ color: grey[600] }}
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="password"
+                name="passwordCurrent"
                 label="Current Password"
                 type="password"
-                id="password"
-                autoComplete="current-password"
+                id="passwordCurrent"
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="passwordConfirm"
+                name="passwordNew"
                 label="New Password"
                 type="password"
-                id="passwordConfirm"
-                autoComplete="passwordConfirm"
+                id="passwordNew"
               />
               <TextField
                 margin="normal"
@@ -163,9 +151,7 @@ export default function SignUpSide() {
                 label="Confirm Password"
                 type="password"
                 id="passwordConfirm"
-                autoComplete="passwordConfirm"
               />
-              
               <Button
                 type="submit"
                 fullWidth
@@ -174,11 +160,6 @@ export default function SignUpSide() {
               >
                 Change Password
               </Button>
-              <Grid container>
-                <Grid item xs>
-                </Grid>
-                
-              </Grid>
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
