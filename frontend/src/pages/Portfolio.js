@@ -6,15 +6,23 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
-import { Button, CardContent } from "@mui/material";
+import { Button, CardContent, Switch } from "@mui/material";
 import { PieChart } from '@mui/x-charts/PieChart';
 import Skeleton from '@mui/material/Skeleton';
 import axios from "axios";
-import { useEffect } from "react";
 import Chart from 'react-apexcharts';
 import { useParams } from "react-router-dom";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Modal from '@mui/material/Modal';
+import ErrorOutlineTwoToneIcon from '@mui/icons-material/ErrorOutlineTwoTone';
+import { useNavigate } from "react-router-dom";
+import LoadingButton from '@mui/lab/LoadingButton';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import jwt from "jwt-decode";
 
 const colours = [
     "#23254D",
@@ -132,35 +140,85 @@ const options = {
     ],
 };
 
-const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtdXN5YWZmYXE5QGdtYWlsLmNvbSIsImV4cCI6MTkxNDA1MjYyNn0.ze1n-N7sOvZ2sNlScPXXbcTv4TG1M63dA3Ibd9FIxHA';
+const modalStyle = {
+    position: 'absolute',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid lightgrey',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 2,
+};
 
 export default function Portfolio() {
     const { id } = useParams();
 
-    useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    const decoded = jwt(token);
+    const currUserId = decoded.jti;
+    const navigate = useNavigate();
+
+    React.useEffect(() => {
         getPortfolioData(id);
-    }, []);
+        console.log("useEffect");
+    }, [id]);
 
     const today = new Date();
+
+    const [dataLoaded, setDataLoaded] = React.useState(false);
+    // setTimeout(() => {
+    //     setDataLoaded(true);
+    // }, 2000);
 
     const [portfolioData, setPortfolioData] = React.useState(null);
     const [portfolioStockData, setPortfolioStockData] = React.useState(null);
     const [seriesData, setSeriesData] = React.useState(null);
     const [filteredSeriesData, setFilteredSeriesData] = React.useState(null);
+    const [stockDataType, setStockDataType] = React.useState("monthly");
+    const [seriesPeriod, setSeriesPeriod] = React.useState("10y");
 
     
     const getData = async (ticker) => {
         try {
-            const res = await axios.get("/api/stockwrapper/" + ticker, {
+            const res = await axios.get("/api/stockwrapper/" + stockDataType + "Stock/" + ticker, {
                 headers: { Authorization: `Bearer ${token}` }
         })
             // console.log(res.data)
             return res.data
         } catch (error) {
-            console.log("API unavailable")
-            setSeriesData([])
+            throw error;
         }
     };
+
+    const getStockData = async (stockList) => {
+        // console.log(stockList)
+        let stockDataSeries = [];
+        try {
+            for (let key in stockList) {
+                const stock = stockList[key];
+                const stockData = await getData(stock.stockPk.ticker).catch((error) => {
+                    console.log(error)
+                    error.message = "API unavailable";
+                    console.log("Stockwrapper fail")
+                    throw error
+                });
+                // console.log(stockData)
+                const series = {
+                    name: stock.stockPk.ticker,
+                    data: stockData.data.map((data) =>[new Date(data.date).getTime(), parseFloat(data.close)]).sort((a, b) => a[0] - b[0]),
+                }
+                stockDataSeries.push(series);
+            }
+            // console.log(stockDataSeries)
+            setSeriesData(stockDataSeries);
+        } catch (error) {
+            console.log("API unavailable")
+            setFilteredSeriesData([])
+        }
+    }
 
     const getPortfolioData = async (portfolioID) => {
         try {
@@ -173,51 +231,27 @@ export default function Portfolio() {
             // console.log(res.data)
             setPortfolioData(res.data)
             setPortfolioStockData(res.data.stocks)
-            let stockDataSeries = [];
-            for (let key in res.data.stocks) {
-                const stock = res.data.stocks[key];
-                const stockData = await getData(stock.stockPk.ticker).catch((error) => {
-                    error.message = "API unavailable";
-                    throw error
-                });
-                // console.log(stockData)
-                stockDataSeries.push({
-                    name: stock.stockPk.ticker,
-                    data: stockData.map((data) =>[new Date(data.date).getTime(), parseFloat(data.close) * stock.quantity]).sort((a, b) => a[0] - b[0]),
-                });
-            }
-            setSeriesData(stockDataSeries);
-            setFilteredSeriesData(stockDataSeries);
+            // console.log(portfolioStockData)
+            // if (portfolioStockData !== null) {
+            await getStockData(res.data.stocks);
+            // console.log("stockdata retrived")
+            await filterData("10y");
+            // }
         } catch (error) {
             if (error.message === "Portfolio not found") {
                 setPortfolioData(error.message)
-            } else if (error.message === "API unavailable") {
-                console.log("API unavailable")
-                setSeriesData([])
             }
+        } finally {
+            setDataLoaded(true);
+            console.log(filteredSeriesData)
         }
-        
     };
 
-    const getCurrentTotalValue = () => {
-        let total = 0;
-        for (let key in portfolioStockData) {
-            for (let key2 in seriesData) {
-                if (seriesData[key2].name === portfolioStockData[key].stockPk.ticker) {
-                    total += seriesData[key2].data[seriesData[key2].data.length - 1][1];
-                }
-            }
-        }
-        return total.toFixed(2);
-    }
-
-    const [seriesPeriod, setSeriesPeriod] = React.useState("10y");
-
-    const handleSeriesPeriod = (event, newSeriesPeriod) => {
-        setSeriesPeriod(newSeriesPeriod);
+    const filterData = async (period) => {
+        // console.log("filterData");
         let beginningDate = '';
 
-        switch (newSeriesPeriod) {
+        switch (period) {
             case "5y":
                 beginningDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
                 break;
@@ -239,19 +273,91 @@ export default function Portfolio() {
         }
 
         let newSeriesData = [];
-        for (let key in seriesData) {
-            let newData = seriesData[key].data.filter((data) => {
-                return data[0] >= beginningDate.getTime();
-            })
-            
-            newSeriesData.push({
-                name: seriesData[key].name,
-                data: newData,
-            });
+        let startQtyData = {};
+        if  (seriesData !== null)  {
+            for (let key in seriesData) {
+                let newData = seriesData[key].data.filter((data) => 
+                    data[0] >= beginningDate.getTime()
+                )
+                // console.log(newData)
+                startQtyData[seriesData[key].name] = portfolioData.capital * portfolioStockData[key].proportion / 100 / newData[0][1];
+                // console.log(portfolioData.capital)
+                // console.log(portfolioStockData[key].proportion / 100)
+                // console.log(portfolioData.capital * portfolioStockData[key].proportion / 100)
+                // console.log(newData[0][1])
+
+                const data = {
+                    name: seriesData[key].name,
+                    data: newData.map((data) => [data[0], data[1] * startQtyData[seriesData[key].name]]),
+                };
+                // console.log(data);
+                newSeriesData.push(data);
+            }
+            // console.log(newSeriesData);
+            setFilteredSeriesData(newSeriesData);
         }
-        setFilteredSeriesData(newSeriesData);
-        console.log(filteredSeriesData)
+    }
+
+
+    const getCurrentTotalValue = () => {
+        let total = 0;
+        for (let key in portfolioStockData) {
+            for (let key2 in filteredSeriesData) {
+                if (filteredSeriesData[key2].name === portfolioStockData[key].stockPk.ticker) {
+                    total += filteredSeriesData[key2].data[filteredSeriesData[key2].data.length - 1][1];
+                }
+            }
+        }
+        return total.toFixed(2);
+    }
+
+    const handleSeriesPeriod = (event, newSeriesPeriod) => {
+        setSeriesPeriod(newSeriesPeriod);
+        let dataType = "";
+
+        switch (newSeriesPeriod) {
+            case "1m":
+                dataType = "daily";
+                break;
+            default:
+                dataType = "monthly";
+                break;
+        }
+
+        if (stockDataType !== dataType) {
+            setStockDataType(dataType);
+            getStockData(portfolioStockData);
+        }
+        filterData(newSeriesPeriod);
     };
+
+    const [open, setOpen] = React.useState(false);
+    const [deleteError,  setDeleteError] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
+    const [openSuccss, setOpenSuccess] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const handleDelete = async () => {
+        try {
+            setLoading(true);
+            await axios.delete("/api/portfolio/" + id, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            setTimeout(() => {
+                setLoading(false);
+                setOpen(false);
+                setOpenSuccess(true);
+            }
+            , 3000);
+
+            setTimeout(() => {
+                // setOpenSuccess(false);
+                navigate("/Home");
+            }, 5000);
+        } catch (error) {
+            setDeleteError(error.response.data.message)
+        }
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -261,12 +367,17 @@ export default function Portfolio() {
                 mb: 2,
                 mx: 10,
             }}>
-                {
+                {   
                     portfolioData === null ? 
                     <Skeleton variant="rectangular" width="100%" height={100} /> :
                     
                     typeof (portfolioData) === String ? 
                     <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>{portfolioData}</Typography> : 
+                    
+                    // Uncomment this to prevent users from accessing other users' portfolios
+                    portfolioData.userId !== parseInt(currUserId) ?
+                    <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>You do not have access to this portfolio</Typography>
+                    :
 
                 <Grid
                     container
@@ -280,8 +391,75 @@ export default function Portfolio() {
                         <Grid item>
                             <Typography variant="h4" gutterBottom>{portfolioData.name}</Typography>
                         </Grid>
-                        <Grid item>
+                        <Grid item >
                             <Button variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
+                            <Tooltip title="Delete">
+                                <IconButton onClick={handleOpen}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+
+                            <Modal
+                                open={openSuccss}
+                                onClose={handleClose}
+                                aria-labelledby="delte-portfolio-modal-title"
+                                aria-describedby="delte-portfolio-modal-description"
+                            >
+                                <Box sx={modalStyle}>
+                                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                                        <CheckCircleIcon sx={{color: 'green', mr: 1}}/>
+                                        Deletion Success
+                                    </Typography>
+                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                        The portfolio has been successfully deleted. <br />
+                                        Redicting you back to the home page...
+                                        <LoadingButton loading />
+                                    </Typography>
+                                </Box>
+                            </Modal>
+
+                            <Modal
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="delte-portfolio-modal-title"
+                                aria-describedby="delte-portfolio-modal-description"
+                            >
+                                <Box sx={modalStyle}>
+                                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                                        <ErrorOutlineTwoToneIcon sx={{color: 'orange', mr: 1}}/>
+                                        Are you sure?
+                                    </Typography>
+                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                        Once you delete, you can never restore it.
+                                    </Typography>
+
+                                    <Grid container justifyContent="flex-end" sx={{mt: 2}} spacing={1}>
+                                        <Grid item>
+                                            <Button variant="outlined" onClick={handleClose}>Cancel</Button>
+                                        </Grid>
+                                        <Grid item>
+                                            {/* <Button variant="contained" onClick={handleDelete}  color="error"disabled={loading}>
+                                                
+                                                Confirm Delete
+                                            </Button> */}
+                                            <LoadingButton
+                                                onClick={handleDelete}
+                                                loading={loading}
+                                                loadingPosition="start"
+                                                variant="contained"
+                                                color="error"
+                                                startIcon={<DeleteIcon />}
+                                                >
+                                                <span>Confirm Delete</span>
+                                            </LoadingButton>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container justifyContent="flex-end" sx={{mt: 2}}>
+                                        <Typography variant="body2" sx={{color: 'red'}}>{deleteError}</Typography>
+                                    </Grid>
+                                </Box>
+                            </Modal>
+                            
                         </Grid>
                     </Grid>
                     <Grid item>
@@ -318,10 +496,10 @@ export default function Portfolio() {
                             </Grid>
                             <Grid item xs={12} style={{ minHeight: "25rem"}}>
                                 {
-                                    seriesData === null ?
-                                    <Skeleton variant="rectangular" width="100%" height={500} /> 
-                                    : seriesData.length === 0 ?
-                                    <span style={{textAlign: 'right', width: "100%",}}>No Data</span> :
+                                    !dataLoaded ?
+                                    <Skeleton variant="rectangular" width="100%" height={500} />  :
+                                    filteredSeriesData === null || filteredSeriesData.length === 0 ?
+                                    <Typography variant="h6" style={{textAlign: 'right', width: "100%",}}>No Data</Typography> :
                                     <Chart
                                         options={options}
                                         // series={series}
@@ -333,6 +511,7 @@ export default function Portfolio() {
                                         //     minHeight: '25rem',
                                         // }}
                                     />
+                                    
                                 }
                             </Grid>
                         </Grid>
@@ -357,7 +536,7 @@ export default function Portfolio() {
                                             </Grid>
                                             <Grid item container justifyContent="space-between" alignItems='center' xs={12}>
                                                 <Grid item xs={6}>
-                                                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Current Total Value</Typography>
+                                                    <Typography variant="h6" style={{fontWeight: 'bold'}}>Total Value Today</Typography>
                                                 </Grid>
                                                 <Grid item>
                                                     <Typography variant="h6">
@@ -382,7 +561,7 @@ export default function Portfolio() {
                                                         portfolioStockData.map((stock, key) => {
                                                             return { 
                                                                 id: key,
-                                                                value: stock.quantity,
+                                                                value: stock.proportion,
                                                                 label: stock.stockPk.ticker,
                                                             }
                                                         })

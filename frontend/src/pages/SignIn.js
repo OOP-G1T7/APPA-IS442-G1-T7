@@ -46,12 +46,11 @@ export default function SignInSide() {
       password: data.get("password"),
     };
 
-    console.log(userRequest);
-
     axios
       .post(`http://localhost:8080/api/user/login`, userRequest)
       .then((res) => {
-        window.location.href = "/Portfolio";
+        sessionStorage.setItem("token", res.data.data.token);
+        window.location.href = "/Home";
       })
       .catch(function(error) {
         if (error.response) {

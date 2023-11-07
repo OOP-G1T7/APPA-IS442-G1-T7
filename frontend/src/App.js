@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 // Pages
+import RouteGuard from "./util/RouteGuard";
+import TestAuth from "./pages/TestAuth";
 
 import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
@@ -28,15 +30,25 @@ function App() {
             path="/RequestResetPassword"
             element={<RequestResetPassword />}
           />
-          <Route path="/ResetPassword/:uniqueid" element={<ResetPassword />} />
-          <Route path="/Home" element={<Home />} />
           <Route path="/Account" element={<Account />} />
-          <Route path="/Portfolio" element={<PortfolioList />} />
           <Route path="/Portfolio/:id" element={<Portfolio />} />
-          <Route path="/PortfolioCreation" element={<PortfolioCreation />} />
           <Route path="/ChangePassword" element={<ChangePassword />} />
+          <Route path="/Home" element={<RouteGuard element={<PortfolioList />} />} />
+          <Route
+            path="/Portfolio/:id"
+            element={<RouteGuard element={<Portfolio />} />}
+          />
+          <Route
+            path="/PortfolioCreation"
+            element={<RouteGuard element={<PortfolioCreation />} />}
+          />
           {/* If a non-existent route is defined, redirect to */}
           <Route path="*" element={<NoPage />} />
+          {/* TEST AUTH PAGE */}
+          <Route
+            path="test-auth"
+            element={<RouteGuard element={<TestAuth />} />}
+          />
         </Routes>
       </BrowserRouter>
     </>
