@@ -1,6 +1,5 @@
 package com.example.analyticsapp.user;
 
-
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +40,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository; //added for change password
+    private UserRepository userRepository; // added for change password
 
     private final AuthenticationManager authenticationManager;
 
@@ -113,49 +113,51 @@ public class UserController {
         }
     }
 
-
     /**
      * Allows a user to change their password.
      *
      * @return A success response or an error response.
      */
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<ApiResponse<String>> changePassword(
+            @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             // Check if the email and current password match
             UserEntity user = userRepository.getUserByEmail(changePasswordRequest.getEmail());
-    
+
             if (user != null) {
                 String inputPassword = changePasswordRequest.getCurrentPassword();
                 String storedHashedPassword = user.getPassword();
                 String newPassword = changePasswordRequest.getNewPassword();
                 String confirmPassword = changePasswordRequest.getConfirmPassword();
-                
+
                 // Print relevant information for debugging
                 System.out.println("Email: " + changePasswordRequest.getEmail());
                 System.out.println("Stored Hashed Password: " + storedHashedPassword);
                 System.out.println("Input Password: " + changePasswordRequest.getCurrentPassword());
-    
+
                 if (BCrypt.checkpw(inputPassword, storedHashedPassword)) {
                     // Check if the new password matches the confirm password
                     if (newPassword.equals(confirmPassword)) {
                         // Hash the new password using the utility class
                         String newHashedPassword = HashingPassword.hashPassword(changePasswordRequest.getNewPassword());
-    
+
                         // Update the password in the database
                         user.setPassword(newHashedPassword);
                         userRepository.save(user);
-    
+
                         ApiResponse<String> response = new ApiResponse<>(200, "Password changed successfully!", null);
                         return ResponseEntity.ok(response);
                     } else {
                         // Passwords don't match
-                        ApiResponse<String> response = new ApiResponse<>(400, "New password and confirm password do not match.", null);
+                        ApiResponse<String> response = new ApiResponse<>(400,
+                                "New password and confirm password do not match.", null);
                         return ResponseEntity.badRequest().body(response);
                     }
                 } else {
                     // Email and current password don't match
-                    ApiResponse<String> response = new ApiResponse<>(400, "Email and current password do not match.", null);
+                    ApiResponse<String> response = new ApiResponse<>(400, "Email and current password do not match.",
+                            null);
                     return ResponseEntity.badRequest().body(response);
                 }
             } else {
@@ -165,10 +167,10 @@ public class UserController {
             }
         } catch (Exception e) {
             // Handle any other exceptions
-            ApiResponse<String> response = new ApiResponse<>(500, "An error occurred while changing the password.", e.getMessage());
+            ApiResponse<String> response = new ApiResponse<>(500, "An error occurred while changing the password.",
+                    e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
 
 }
