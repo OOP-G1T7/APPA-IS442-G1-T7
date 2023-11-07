@@ -14,10 +14,12 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import { grey } from '@mui/material/colors';
+import jwt from "jwt-decode";
 
 const Swal = require("sweetalert2");
 
 function Copyright(props) {
+  
   return (
     <Typography variant="body2" color="textSecondary" align="center" {...props}>
       {'Copyright © '}
@@ -33,6 +35,8 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function ChangePassword() {
+  const token = sessionStorage.getItem("token");
+  const decoded = jwt(token);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -117,7 +121,7 @@ export default function ChangePassword() {
                 id="email"
                 label="Email Address"
                 name="email"
-                value="jenniferwilliams89@gmail.com"
+                value={decoded.sub}
                 autoComplete="email"
                 autoFocus
                 inputProps={{
@@ -159,6 +163,14 @@ export default function ChangePassword() {
                 sx={{ mt: 3, mb: 2 }}
               >
                 Change Password
+              </Button>
+              <Button
+                href="/Account"
+                fullWidth
+                variant="outlined"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Back
               </Button>
               <Copyright sx={{ mt: 5 }} />
             </Box>
