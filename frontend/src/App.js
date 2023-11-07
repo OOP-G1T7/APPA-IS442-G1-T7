@@ -15,6 +15,7 @@ import Portfolio from "./pages/Portfolio";
 import PortfolioList from "./pages/PortfolioList";
 import PortfolioCreation from "./pages/PortfolioCreation";
 import ResetPassword from "./pages/ResetPassword";
+import PortfolioEditing from "./pages/PortfolioEditing";
 import RequestResetPassword from "./pages/RequestResetPassword";
 
 function App() {

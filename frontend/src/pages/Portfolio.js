@@ -360,8 +360,6 @@ export default function Portfolio() {
     }
 
 
-    let navigate = useNavigate();
-
     function handleClick() {
         navigate("/Portfolio/"+id+"/Edit");
     }
@@ -382,9 +380,9 @@ export default function Portfolio() {
                     <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>{portfolioData}</Typography> : 
                     
                     // Uncomment this to prevent users from accessing other users' portfolios
-                    portfolioData.userId !== parseInt(currUserId) ?
-                    <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>You do not have access to this portfolio</Typography>
-                    :
+                    // portfolioData.userId !== parseInt(currUserId) ?
+                    // <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>You do not have access to this portfolio</Typography>
+                    // :
 
                 <Grid
                     container
@@ -399,6 +397,7 @@ export default function Portfolio() {
                             <Typography variant="h4" gutterBottom>{portfolioData.name}</Typography>
                         </Grid>
                         <Grid item >
+                            <Button onClick={handleClick} variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
                             <Tooltip title="Delete">
                                 <IconButton onClick={handleOpen}>
                                     <DeleteIcon />
@@ -466,7 +465,6 @@ export default function Portfolio() {
                                 </Box>
                             </Modal>
                             
-                            <Button onClick={handleClick} variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
                         </Grid>
                     </Grid>
                     <Grid item>

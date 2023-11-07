@@ -100,7 +100,7 @@ export default function PortfolioList() {
 
     const getPortfolios = async (userId) => {
         try {
-            const response = await axios.get('/api/portfolios/' + userId, {
+            const response = await axios.get('/api/portfolios/' + 1, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPortfolios(response.data);
