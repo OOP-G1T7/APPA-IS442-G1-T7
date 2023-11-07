@@ -61,7 +61,7 @@ export default function Portfolio() {
         for (let i = 0; i < selectedTickers.length; i++) {
             totalProportion += selectedTickers[i].proportion;
         }
-        if (totalProportion === 1 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
+        if (totalProportion === 100 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
             axios.post(`/api/portfolio`, {
                 userId: 1,
                 name: portfolioName,
@@ -97,7 +97,7 @@ export default function Portfolio() {
             let errorsList = '';
 
             if (totalProportion != 1) {
-                errorsList += "<li>Stocks' proportions do not add up to 1</li>";
+                errorsList += "<li>Stocks' proportions do not add up to 100</li>";
             }
             if (portfolioCapital == '') {
                 errorsList += "<li>Portfolio capital empty</li>";
