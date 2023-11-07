@@ -3,10 +3,6 @@ package com.example.analyticsapp.stockwrapper;
 import com.example.analyticsapp.redis.RedisService;
 import com.example.analyticsapp.stockwrapper.util.TickerNotFoundException;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -78,6 +73,8 @@ public class StockWrapperService {
             result.add(dataPoint);
         }
 
+        redisService.closeJedisPool();
+
         return result;
     }
 
@@ -123,6 +120,8 @@ public class StockWrapperService {
             dataPoint.put("close", closingPrice);
             result.add(dataPoint);
         }
+
+        redisService.closeJedisPool();
 
         return result;
     }
@@ -193,6 +192,8 @@ public class StockWrapperService {
             stockData.put("name", stockInfo.getString("2. name"));
             result.add(stockData);
         }
+
+        redisService.closeJedisPool();
 
         return result;
     }

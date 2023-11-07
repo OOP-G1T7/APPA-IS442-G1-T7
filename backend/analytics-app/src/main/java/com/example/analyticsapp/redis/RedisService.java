@@ -14,17 +14,25 @@ public class RedisService {
     String password = "kkiwZNWzNfnH2OJH1xduyaGj1wbIt9K7";
 
     public String getCachedData(String key) {
-        Jedis jedis = jedisPool.getResource();
-        // Authenticate to the Redis Cloud instance using your username and password
-        jedis.auth(username, password);
-        return jedis.get(key);
+        try (Jedis jedis = jedisPool.getResource()) {
+            // Authenticate to the Redis Cloud instance using your username and password
+            jedis.auth(username, password);
+            return jedis.get(key);
+        }
     }
 
     public void cacheData(String key, String data) {
-        Jedis jedis = jedisPool.getResource();
-        // Authenticate to the Redis Cloud instance using your username and password
-        jedis.auth(username, password);
-        jedis.setex(key, 3600, data); // Cache it for future use
+        try (Jedis jedis = jedisPool.getResource()) {
+            // Authenticate to the Redis Cloud instance using your username and password
+            jedis.auth(username, password);
+            jedis.setex(key, 3600, data); // Cache it for future use
+        }
+    }
+
+    public void closeJedisPool() {
+        if (jedisPool != null) {
+            jedisPool.destroy();
+        }
     }
 
 }
