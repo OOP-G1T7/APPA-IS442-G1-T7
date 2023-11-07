@@ -3,15 +3,17 @@ import "./App.css";
 
 // Pages
 
-import Home from './pages/Home';
-import NoPage from './pages/NoPage';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import ChangePassword from './pages/ChangePassword';
-import Account from './pages/Account';
-import Portfolio from './pages/Portfolio';
-import PortfolioList from './pages/PortfolioList';
-import PortfolioCreation from './pages/PortfolioCreation';
+import Home from "./pages/Home";
+import NoPage from "./pages/NoPage";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import ChangePassword from "./pages/ChangePassword";
+import Account from "./pages/Account";
+import Portfolio from "./pages/Portfolio";
+import PortfolioList from "./pages/PortfolioList";
+import PortfolioCreation from "./pages/PortfolioCreation";
+import ResetPassword from "./pages/ResetPassword";
+import RequestResetPassword from "./pages/RequestResetPassword";
 
 function App() {
   return (
