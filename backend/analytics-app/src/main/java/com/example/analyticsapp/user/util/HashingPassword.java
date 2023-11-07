@@ -20,4 +20,14 @@ public class HashingPassword {
 
         return newUserEntity;
     }
+
+    public static String hashPassword(String plainPassword) {
+        // Generate a salt (a random value)
+        String salt = BCrypt.gensalt();
+
+        // Hash the password using the salt
+        String hashedPassword = BCrypt.hashpw(plainPassword, salt);
+
+        return hashedPassword;
+    }
 }

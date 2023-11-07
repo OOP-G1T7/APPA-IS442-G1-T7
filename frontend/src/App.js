@@ -2,15 +2,20 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 // Pages
+import RouteGuard from "./util/RouteGuard";
+import TestAuth from "./pages/TestAuth";
+
 import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import ChangePassword from "./pages/ChangePassword";
+import Account from "./pages/Account";
 import Portfolio from "./pages/Portfolio";
 import PortfolioList from "./pages/PortfolioList";
 import PortfolioCreation from "./pages/PortfolioCreation";
-import RouteGuard from "./util/RouteGuard";
-import TestAuth from "./pages/TestAuth";
+import ResetPassword from "./pages/ResetPassword";
+import RequestResetPassword from "./pages/RequestResetPassword";
 
 function App() {
   return (
@@ -21,11 +26,14 @@ function App() {
           <Route index element={<SignIn />} />
           <Route path="/SignIn" element={<SignIn />} />
           <Route path="/SignUp" element={<SignUp />} />
+          <Route
+            path="/RequestResetPassword"
+            element={<RequestResetPassword />}
+          />
+          <Route path="/Account" element={<Account />} />
+          <Route path="/Portfolio/:id" element={<Portfolio />} />
+          <Route path="/ChangePassword" element={<ChangePassword />} />
           <Route path="/Home" element={<RouteGuard element={<PortfolioList />} />} />
-          {/* <Route
-            path="/Portfolio"
-            element={<RouteGuard element={<PortfolioList />} />}
-          /> */}
           <Route
             path="/Portfolio/:id"
             element={<RouteGuard element={<Portfolio />} />}
