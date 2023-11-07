@@ -19,10 +19,13 @@ export default function Navbar() {
         navigate("/Portfolio");
     }
     function redirectHome() {
-        navigate("/Home");
+        navigate("/Portfolio");
     }
     function redirectLogout() {
-        navigate("/Logout");
+        navigate("/SignIn");
+    }
+    function redirectAccount() {
+        navigate("/Account");
     }
     return (
         <ThemeProvider theme={theme}>
@@ -34,6 +37,9 @@ export default function Navbar() {
                         </Grid>
                         <Grid item>
                             <Typography><Button onClick={redirectPortfolio} color='buttonFontColor' style={{ textTransform: 'none' }}>Portfolio</Button></Typography>
+                        </Grid>
+                        <Grid item>
+                            <Typography><Button onClick={redirectAccount} color='buttonFontColor' style={{ textTransform: 'none' }}>Account</Button></Typography>
                         </Grid>
                         <Grid item>
                             <Typography><Button onClick={redirectLogout} color='buttonFontColor' style={{ textTransform: 'none' }}>Logout</Button></Typography>
