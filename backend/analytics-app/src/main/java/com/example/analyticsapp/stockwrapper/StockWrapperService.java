@@ -78,6 +78,8 @@ public class StockWrapperService {
             result.add(dataPoint);
         }
 
+        redisService.closeJedisPool();
+
         return result;
     }
 
@@ -123,6 +125,8 @@ public class StockWrapperService {
             dataPoint.put("close", closingPrice);
             result.add(dataPoint);
         }
+
+        redisService.closeJedisPool();
 
         return result;
     }
@@ -193,6 +197,8 @@ public class StockWrapperService {
             stockData.put("name", stockInfo.getString("2. name"));
             result.add(stockData);
         }
+
+        redisService.closeJedisPool();
 
         return result;
     }
