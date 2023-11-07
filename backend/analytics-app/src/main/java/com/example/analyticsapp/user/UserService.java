@@ -13,4 +13,6 @@ public interface UserService {
      */
     UserEntity register(UserRegisterRequest userRequest);
 
+    UserEntity getUserByEmail(String email);
+
 }
