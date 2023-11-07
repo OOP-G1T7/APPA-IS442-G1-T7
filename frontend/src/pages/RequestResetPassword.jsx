@@ -138,6 +138,14 @@ export default function RequestResetPassword() {
               >
                 Reset Password
               </Button>
+              <Grid container>
+                <Grid item xs></Grid>
+                <Grid item>
+                  <Link href="/SignIn" variant="body2">
+                    {"Go back to Sign In Page"}
+                  </Link>
+                </Grid>
+              </Grid>
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>

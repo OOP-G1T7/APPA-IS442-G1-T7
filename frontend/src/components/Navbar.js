@@ -22,6 +22,7 @@ export default function Navbar() {
         navigate("/Portfolio");
     }
     function redirectLogout() {
+        sessionStorage.clear()
         navigate("/SignIn");
     }
     function redirectAccount() {
