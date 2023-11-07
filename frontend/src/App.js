@@ -1,7 +1,8 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
 
 // Pages
+
 import Home from './pages/Home';
 import NoPage from './pages/NoPage';
 import SignIn from './pages/SignIn';
@@ -21,6 +22,11 @@ function App() {
           <Route index element={<SignIn />} />
           <Route path="/SignIn" element={<SignIn />} />
           <Route path="/SignUp" element={<SignUp />} />
+          <Route
+            path="/RequestResetPassword"
+            element={<RequestResetPassword />}
+          />
+          <Route path="/ResetPassword/:uniqueid" element={<ResetPassword />} />
           <Route path="/Home" element={<Home />} />
           <Route path="/Account" element={<Account />} />
           <Route path="/Portfolio" element={<PortfolioList />} />

@@ -19,7 +19,7 @@ public class StockServiceImplementation implements StockService {
     private PortfolioRepository portfolioRepo;
 
     @Override
-    public ResponseEntity<String> addStockToPortfolio(StockRequestDTO stockDTO, int portfolioId) {
+    public ResponseEntity<String> addStockToPortfolio(ArrayList<StockRequestDTO> stockDTO, int portfolioId) {
         JSONObject response = new JSONObject();
         PortfolioEntity portfolio = portfolioRepo.getPortfolio(portfolioId);
         if (portfolio == null) {
@@ -27,31 +27,22 @@ public class StockServiceImplementation implements StockService {
             return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
         }
 
-        // try {
-            StockEntity stock = new StockEntity();
+        for (StockRequestDTO stock : stockDTO) {
+            StockEntity stockEntity = new StockEntity();
             StockPK stockPk = new StockPK();
 
             stockPk.setPortfolioId(portfolioId);
-            stockPk.setTicker(stockDTO.getTicker());
-            stock.setStockPk(stockPk);
-            stock.setQuantity(stockDTO.getQuantity());
-            // System.out.println(stock);
+            stockPk.setTicker(stock.getTicker());
+            stockEntity.setStockPk(stockPk);
+            stockEntity.setProportion(stock.getProportion());
 
-            portfolio.addStock(stock);
-            // System.out.println(portfolio);
-            stockRepo.save(stock);
+            portfolio.addStock(stockEntity);
+            stockRepo.save(stockEntity);
+        }
 
-            response.put("message", "Stock added successfully");
+            response.put("message", "Stocks added successfully");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
             
-        // } catch (Exception e) {
-        //     response.put("message", "Failed to add stock");
-        //     return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
-        // }
-        
-
-        
-        
     }
 
     @Override
@@ -83,19 +74,35 @@ public class StockServiceImplementation implements StockService {
     }
 
     @Override
-    public ResponseEntity<String> editStock(StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+    public ResponseEntity<String> editStock(ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         JSONObject response = new JSONObject();
-        try {
-            StockEntity stock = stockRepo.getOneStock(portfolioId, stockDTO.getTicker());
-            stock.setQuantity(stockDTO.getQuantity());
-            stockRepo.save(stock);
 
-            response.put("message", "Stock edited successfully");
+        try {
+            for (StockRequestDTO stock : stockDTO) {
+                StockEntity stockEntity = stockRepo.getOneStock(portfolioId, stock.getTicker());
+                stockEntity.setProportion(stock.getProportion());
+                stockRepo.save(stockEntity);
+            }
+
+            response.put("message", "Stocks edited successfully");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 
         } catch (Exception e) {
             response.put("message", "Failed to update stock");
             return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
         }
+
+        // try {
+        //     StockEntity stock = stockRepo.getOneStock(portfolioId, stockDTO.getTicker());
+        //     stock.setProportion(stockDTO.getProportion());
+        //     stockRepo.save(stock);
+
+        //     response.put("message", "Stock edited successfully");
+        //     return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+
+        // } catch (Exception e) {
+        //     response.put("message", "Failed to update stock");
+        //     return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
+        // }
     }
 }

@@ -32,6 +32,7 @@ import com.example.analyticsapp.user.util.UserRegisterRequest;
  * This controller handles HTTP requests and interacts with the UserService.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/api/user")
 public class UserController {
 

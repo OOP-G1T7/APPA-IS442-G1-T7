@@ -3,10 +3,6 @@ package com.example.analyticsapp.stockwrapper;
 import com.example.analyticsapp.redis.RedisService;
 import com.example.analyticsapp.stockwrapper.util.TickerNotFoundException;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -48,42 +43,14 @@ public class StockWrapperService {
             String apiUrl = getStockEndpoint(stockTicker, "TIME_SERIES_DAILY");
 
             if (apiUrl != null) {
-                // Create a URL object
-                URL url = new URL(apiUrl);
 
-                // Open a connection to the URL
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
+                stockData = makeApiRequest(apiUrl);
 
-                // Get the response code
-                int responseCode = connection.getResponseCode();
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // Read the response data
-                    try (BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(connection.getInputStream()))) {
-
-                        StringBuilder response = new StringBuilder();
-                        String line;
-
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line);
-                        }
-
-                        // Parse the JSON response
-                        stockData = new JSONObject(response.toString());
-
-                        redisService.cacheData("data - " + stockTicker, response.toString());
-                    }
-                } else {
-                    System.out.println("API request failed with status code: " + responseCode);
-                    // NEED TO THROW ERROR
-                    throw new Exception();
-                }
+                redisService.cacheData("data - " + stockTicker, stockData.toString());
             } else {
                 System.out.println("Failed to retrieve API endpoint.");
                 // NEED TO THROW ERROR
-                throw new Exception();
+                throw new Exception("Failed to retrieve API endpoint.");
             }
 
         }
@@ -105,6 +72,56 @@ public class StockWrapperService {
             dataPoint.put("close", closingPrice);
             result.add(dataPoint);
         }
+
+        redisService.closeJedisPool();
+
+        return result;
+    }
+
+    public List<Map<String, String>> getMonthlyStockData(String stockTicker) throws Exception {
+        List<Map<String, String>> result = new ArrayList<>();
+        JSONObject stockData;
+
+        // Retrieve cached data
+        String cachedData = redisService.getCachedData("data - " + stockTicker + "_monthly");
+
+        // Check if it has been cached
+        if (cachedData != null) {
+            System.out.println("Monthly Data being fetched from Cached memory");
+            stockData = new JSONObject(cachedData);
+        } else {
+            // Data is not in the cache, fetch it from the original source
+            System.out.println("Monthly Data being fetched from Alpha Vantage");
+
+            String apiUrl = getStockEndpoint(stockTicker, "TIME_SERIES_MONTHLY");
+
+            if (apiUrl != null) {
+                stockData = makeApiRequest(apiUrl);
+
+                redisService.cacheData("data - " + stockTicker + "_monthly", stockData.toString());
+            } else {
+                System.out.println("Failed to retrieve API endpoint.");
+                throw new Exception("Failed to retrieve API endpoint.");
+            }
+        }
+
+        if (stockData.has("Error Message")) {
+            throw new TickerNotFoundException(stockTicker);
+        }
+
+        JSONObject timeSeries = stockData.getJSONObject("Monthly Time Series");
+
+        for (String dateStr : timeSeries.keySet()) {
+            JSONObject timeData = timeSeries.getJSONObject(dateStr);
+            String closingPrice = timeData.getString("4. close");
+
+            Map<String, String> dataPoint = new HashMap<>();
+            dataPoint.put("date", dateStr);
+            dataPoint.put("close", closingPrice);
+            result.add(dataPoint);
+        }
+
+        redisService.closeJedisPool();
 
         return result;
     }
@@ -176,6 +193,8 @@ public class StockWrapperService {
             result.add(stockData);
         }
 
+        redisService.closeJedisPool();
+
         return result;
     }
 
@@ -213,8 +232,14 @@ public class StockWrapperService {
     }
 
     public void getStockListingCSV() throws Exception {
+        String plannedPath = "backend";
+        File plannedPathDir = new File(plannedPath);
 
-        String fileName = "backend/data/stockListing.csv";
+        if (!plannedPathDir.exists()) {
+            plannedPath = "..";
+        }
+
+        String fileName = plannedPath + "/data/stockListing.csv";
         File csvFile = new File(fileName);
 
         if (csvFile.exists()) {
@@ -250,7 +275,7 @@ public class StockWrapperService {
                 int responseCode = connection.getResponseCode();
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    File dataFolder = new File("backend/data");
+                    File dataFolder = new File(plannedPath + "/data");
 
                     if (!dataFolder.exists()) {
                         dataFolder.mkdir();
@@ -281,6 +306,35 @@ public class StockWrapperService {
             throw new Exception("Invalid API endpoint.");
         }
         return;
+    }
+
+    private JSONObject makeApiRequest(String apiUrl) throws Exception {
+        // Create a URL object
+        URL url = new URL(apiUrl);
+
+        // Open a connection to the URL
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        // Get the response code
+        int responseCode = connection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                StringBuilder response = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                // Parse the JSON response
+                return new JSONObject(response.toString());
+            }
+        } else {
+            System.out.println("API request failed with status code: " + responseCode);
+            throw new Exception("API request failed with status code: " + responseCode);
+        }
     }
 
     public String getStockEndpoint(String stockTicker, String function) {
