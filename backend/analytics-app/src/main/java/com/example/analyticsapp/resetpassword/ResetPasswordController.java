@@ -2,15 +2,21 @@ package com.example.analyticsapp.resetpassword;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.analyticsapp.common.ApiResponse;
+import com.example.analyticsapp.resetpassword.util.TokenNotFoundException;
+import com.example.analyticsapp.resetpassword.util.UserNotFoundException;
 import com.example.analyticsapp.user.UserEntity;
 import com.example.analyticsapp.user.UserRepository;
+import com.example.analyticsapp.user.util.InvalidPasswordException;
+import com.example.analyticsapp.user.util.PasswordValidation;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -30,44 +36,69 @@ public class ResetPasswordController {
 
     // Generates a token to be used for the api
     @PostMapping("/send-token")
-    public void forgotPassword(@RequestBody ResetRequest resetRequest) {
+    public ResponseEntity<?> forgotPassword(@RequestBody ResetRequest resetRequest) {
         String email = resetRequest.getEmail();
+        try {
+            UserEntity user = userRepo.getUserByEmail(email);
 
-        UserEntity user = userRepo.getUserByEmail(email);
+            if (user == null) {
+                throw new UserNotFoundException("User does not exist");
+            }
 
-        /*
-         * if (user.equals(null)) {
-         * return null;
-         * }
-         */
+            ResetPasswordToken token = resetService.createToken(user);
+            String tokenString = token.getToken();
 
-        ResetPasswordToken token = resetService.createToken(user);
-        String tokenString = token.getToken();
+            String message = "Please click on this link to reset your password:\nhttp://localhost:3000/ResetPassword/"
+                    + tokenString;
+            emailService.sendEmail(email, "Reset Password", message);
 
-        String message = "Please click on this link to reset your password:\nhttp://localhost:3000/ResetPassword/"
-                + tokenString;
-        emailService.sendEmail(email, "Reset Password", message);
+            String result = "Email Sent";
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK.value(), "Success", result);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (UserNotFoundException e) {
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User not found",
+                    e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
 
     }
 
     @PostMapping("/{token}")
-    public UserEntity resetPassword(@PathVariable String token, @RequestBody ChangeRequest changeRequest) {
+    public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestBody ChangeRequest changeRequest) {
         String password = changeRequest.getPassword();
-        ResetPasswordToken tokenStored = resetService.findByToken(token);
+        String confirmPassword = changeRequest.getConfirmPassword();
 
-        // check if the token generated exists in the database and whether it expired
-        /*
-         * if (tokenStored.equals(null) || tokenStored.hasExpired()) {
-         * return null;
-         * }
-         */
+        try {
+            ResetPasswordToken tokenStored = resetService.findByToken(token);
 
-        UserEntity user = tokenStored.getUser();
-        String salt = BCrypt.gensalt();
-        String hashedPassword = BCrypt.hashpw(password, salt);
-        user.setPassword(hashedPassword);
-        userRepo.save(user);
-        return user;
+            if (tokenStored == null || tokenStored.hasExpired()) {
+                throw new TokenNotFoundException("Token not found");
+            }
+
+            PasswordValidation.validatePassword(password, confirmPassword);
+
+            UserEntity user = tokenStored.getUser();
+            String salt = BCrypt.gensalt();
+            String hashedPassword = BCrypt.hashpw(password, salt);
+            user.setPassword(hashedPassword);
+            userRepo.save(user);
+            resetService.deleteToken(tokenStored);
+
+            String result = "Password has been successfully reset";
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK.value(), "Success", result);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (TokenNotFoundException e) {
+            ApiResponse<String> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Token not found",
+                    e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (InvalidPasswordException e) {
+            ApiResponse<String> response = new ApiResponse<String>(500, "InvalidPasswordException",
+                    e.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
     }
 
 }

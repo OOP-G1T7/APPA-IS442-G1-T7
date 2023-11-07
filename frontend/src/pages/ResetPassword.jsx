@@ -43,6 +43,7 @@ export default function ResetPassword() {
 
     const userRequest = {
       password: data.get("password"),
+      confirmPassword: data.get("confirm-password"),
     };
 
     console.log(userRequest);
@@ -57,7 +58,7 @@ export default function ResetPassword() {
           icon: "success",
           focusConfirm: true,
           confirmButtonText: "Sign In",
-          allowOutsideClick: false, 
+          allowOutsideClick: false,
         }).then((result) => {
           /* Read more about isConfirmed, isDenied below */
           if (result.isConfirmed) {
@@ -135,6 +136,15 @@ export default function ResetPassword() {
                 name="password"
                 type="password"
                 autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="confirm-password"
+                label="Confirm New Password"
+                name="confirm-password"
+                type="password"
               />
               <Button
                 type="submit"
