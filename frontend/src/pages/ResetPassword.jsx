@@ -69,13 +69,12 @@ export default function ResetPassword() {
       .catch(function(error) {
         if (error.response) {
           // The server responded with an error
-          const errorMessage = error.response.data.message;
-          console.log(errorMessage);
+          const errorData = error.response.data.data.slice(62, -1);
 
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: errorMessage,
+            text: errorData,
           });
         } else {
           // Network error or something went wrong with the request
