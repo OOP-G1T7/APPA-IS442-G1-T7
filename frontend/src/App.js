@@ -30,10 +30,19 @@ function App() {
             path="/RequestResetPassword"
             element={<RequestResetPassword />}
           />
-          <Route path="/Account" element={<Account />} />
-          <Route path="/Portfolio/:id" element={<Portfolio />} />
           <Route path="/ChangePassword" element={<ChangePassword />} />
-          <Route path="/Home" element={<RouteGuard element={<PortfolioList />} />} />
+          <Route
+            path="/Account"
+            element={<RouteGuard element={<Account />} />}
+          />
+          <Route
+            path="/Portfolio/:id"
+            element={<RouteGuard element={<Portfolio />} />}
+          />
+          <Route
+            path="/Home"
+            element={<RouteGuard element={<PortfolioList />} />}
+          />
           <Route
             path="/Portfolio/:id"
             element={<RouteGuard element={<Portfolio />} />}
