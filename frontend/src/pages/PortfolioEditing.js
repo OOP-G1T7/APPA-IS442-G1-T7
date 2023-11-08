@@ -21,21 +21,15 @@ import TableBody from '@mui/material/TableBody';
 import Navbar from '../components/Navbar';
 import axios from "axios";
 import jwt from "jwt-decode";
-
 import { useParams } from "react-router-dom";
 
-
 const Swal = require("sweetalert2");
-
-
 
 export default function PortfolioEdit() {
 
     const token = sessionStorage.getItem("token");
     const decoded = jwt(token);
     const currUserId = decoded.jti;
-
-
 
     const [selectedEquities, setEquities] = useState([]);
     const [allEquities, setAllEquities] = useState([]);
@@ -48,7 +42,6 @@ export default function PortfolioEdit() {
     const [portfolioData, setPortfolioData] = React.useState(null);
     const [proportions, setProportions] = useState({});
 
-
     const { id } = useParams();
 
     useEffect(() => {
@@ -59,7 +52,7 @@ useEffect(() => {
     if (portfolioData) {
       console.log(portfolioData);
       getData();
-    //   console.log(allEquities);
+
     }
   }, [portfolioData]);
 
@@ -109,28 +102,6 @@ useEffect(() => {
             
         }
 
-        // const tickersToDelete = initialTickers.filter(initialTicker =>
-        //     !selectedTickers.some(selectedTicker => selectedTicker.ticker === initialTicker.ticker)
-        //   ).map(ticker => ticker.ticker);
-        
-        // console.log("initial: ")
-        // console.log(initialTickers)
-
-        // console.log("selected: ")
-        // console.log(selectedTickers)
-        
-        // console.log("deleted: ")
-        // console.log(tickersToDelete)
-
-        // // Find tickers that are in selectedTickers but not in initialTickers
-        // const tickersToAdd = selectedTickers.filter(newTicker =>
-        //     !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
-        //   );
-        
-        // console.log("added:")
-        // console.log(tickersToAdd)
-
-
         if (totalProportion === 100 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
             axios.put(`/api/portfolio`, {
                 portfolioId: id,
@@ -155,17 +126,12 @@ useEffect(() => {
                             headers: headers
                           })
 
-                          .then(res => {
-                            console.log(res);
-                            
+                          .then(res => {                            
                                 // Find tickers that are in selectedTickers but not in initialTickers
                                 const tickersToAdd = selectedTickers.filter(newTicker =>
                                     !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
                                   );
-                
-        
-                                console.log(selectedTickers)
-        
+                     
                                 axios.post(`/api/portfolio/${id}`, tickersToAdd, { headers })
 
                             .then(() => {
@@ -241,9 +207,8 @@ useEffect(() => {
                 error.message = "Portfolio not found";
                 throw error
             })
-            // console.log(res.data)
+
             setPortfolioData(res.data)
-            // setPortfolioStockData(res.data.stocks)
             setPortfolioDescription(res.data.description)
             setPortfolioName(res.data.name)
             setPortfolioCapital(res.data.capital)
@@ -266,7 +231,6 @@ useEffect(() => {
                 setPortfolioData(error.message)
             } else if (error.message === "API unavailable") {
                 console.log("API unavailable")
-                // setSeriesData([])
             }
         }
         
@@ -285,24 +249,6 @@ useEffect(() => {
             updatedArray.push({ ticker: tickerObj.ticker, proportion: parseFloat(tickerObj.proportion) });
         }
 
-        // // tickers to delete
-        // const tickersToDelete = initialTickers.filter(initialTicker =>
-        //     selectedTickers.some(selectedTicker => selectedTicker.ticker === initialTicker.ticker)
-        //   ).map(ticker => ticker.ticker);
-
-        // console.log("initial: ")
-        // console.log(initialTickers)
-        // console.log("deleted: ")
-        // console.log(tickersToDelete)
-
-        // // tickers to add
-        // const tickersToAdd = selectedTickers.filter(newTicker =>
-        //     !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
-        //   );
-
-        // console.log("added:")
-        // console.log(tickersToAdd)
-
         const selectedSymbols = selectedEquities.map(equity => equity.symbol);
         const filteredArray = updatedArray.filter(item => selectedSymbols.includes(item.ticker));
         
@@ -310,11 +256,6 @@ useEffect(() => {
         console.log(filteredArray);
         setSelectedTickers(filteredArray);
     }
-
-  
-
-
-
 
     return (
         <>
@@ -360,17 +301,6 @@ useEffect(() => {
                                         style={{ width: "80%" }}
                                         getOptionLabel={(option) => `${option.symbol} (${option.name})`}
                                         renderOption={(props, option, { selected }) => {
-                                            // console.log(selected)
-                                            // console.log(selectedEquities)
-                                            // if (selectedEquities.includes(
-                                            //     {
-                                            //         symbol: option.symbol,
-                                            //         name: option.name
-                                            //     }
-                                            // )) {
-                                            //     console.log("include")
-                                            //     selected = true;
-                                            // }
                                             
                                             return (
                                             <li {...props}>
