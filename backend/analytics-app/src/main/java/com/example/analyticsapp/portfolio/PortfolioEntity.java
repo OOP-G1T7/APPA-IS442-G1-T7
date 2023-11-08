@@ -1,6 +1,5 @@
 package com.example.analyticsapp.portfolio;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +33,9 @@ public class PortfolioEntity {
     @Column(name = "capital")
     private double capital;
 
-    @OneToMany(mappedBy = "portfolioEntity", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "portfolioEntity", cascade = { CascadeType.REMOVE }, orphanRemoval = true)
     // need to use List not ArrayList
     private List<StockEntity> stocks = new ArrayList<>();
-
 
     // Getters and Setters
 
@@ -60,7 +58,7 @@ public class PortfolioEntity {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -93,7 +91,6 @@ public class PortfolioEntity {
         stocks.add(stock);
         stock.setPortfolio(this);
     }
-
 
     public String toString() {
         return "PortfolioEntity [portfolioId=" + portfolioId + ", userId=" + userId + ", name=" + name

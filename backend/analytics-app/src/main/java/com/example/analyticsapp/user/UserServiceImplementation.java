@@ -25,4 +25,9 @@ public class UserServiceImplementation implements UserService {
         return userRepository.save(newUserEntity);
     }
 
+    @Override
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
 }

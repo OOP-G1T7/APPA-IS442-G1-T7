@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.analyticsapp.log.AuditLogService;
 
 @RestController
+@CrossOrigin(origins =  "*" )
 @RequestMapping("/api")
 public class PortfolioController {
 
@@ -54,15 +56,16 @@ public class PortfolioController {
         ResponseEntity<String> response = portfolioService.createPortfolio(newPortfolioEntity);
         String detail = "Created portfolio with id=" + newPortfolioEntity.getPortfolioId();
         auditLogService.logAuditEvent(detail, response.getStatusCode());
-        return response;
+        return response
     }
 
     @PostMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<String> addStockToPortfolio(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+    public ResponseEntity<String> addStockToPortfolio(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.addStockToPortfolio(stockDTO, portfolioId);
-        String detail = "Added "+ stockDTO.getQuantity() + " " + stockDTO.getTicker() +" stocks to portfolio with id=" + portfolioId;
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        // String detail = "Added "+ stockDTO.getQuantity() + " " + stockDTO.getTicker() +" stocks to portfolio with id=" + portfolioId;
+        // auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
+        
     }
 
     @PutMapping("/portfolio")
@@ -92,11 +95,12 @@ public class PortfolioController {
     }
 
     @PutMapping("/portfolio/stock/{portfolioId}")
-    public ResponseEntity<String> editStock(@RequestBody StockRequestDTO stockDTO, @PathVariable int portfolioId) {
+    public ResponseEntity<String> editStock(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.editStock(stockDTO, portfolioId);
         String detail = "Edited stock in portfolio with id=" + portfolioId;
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
+        
     }
 
 }

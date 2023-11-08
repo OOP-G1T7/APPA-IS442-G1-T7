@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.example.analyticsapp.log.AuditLogService;
 
@@ -38,12 +37,13 @@ public class PortfolioServiceImplementation implements PortfolioService {
     public ResponseEntity<String> createPortfolio(PortfolioEntity newPortfolioEntity) {
         JSONObject response = new JSONObject();
         try {
-            portfolioRepo.save(newPortfolioEntity);
+            PortfolioEntity savedPortfolio = portfolioRepo.save(newPortfolioEntity); // Save and get the saved entity
             response.put("message", "Portfolio created successfully");
+            response.put("portfolioId", savedPortfolio.getPortfolioId()); // Include the portfolioId in the response
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
 
         } catch (Exception e) {
-            response.put("message", "Error occured while creating portfolio");
+            response.put("message", "Error occurred while creating portfolio");
             return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
         }
     }
@@ -53,7 +53,7 @@ public class PortfolioServiceImplementation implements PortfolioService {
         JSONObject response = new JSONObject();
         int portfolioId = updatedPortfolio.getPortfolioId();
         if (portfolioRepo.findById(portfolioId).isPresent()) {
-            
+
             try {
                 portfolioRepo.save(updatedPortfolio);
                 System.out.println("success");
@@ -72,9 +72,7 @@ public class PortfolioServiceImplementation implements PortfolioService {
             response.put("message", "Portfolio not found");
             return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
         }
-        
-        
-        
+
     }
 
     @Override
