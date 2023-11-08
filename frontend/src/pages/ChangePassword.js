@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -16,6 +14,7 @@ import { grey } from '@mui/material/colors';
 import jwt from "jwt-decode";
 import { ThemeProvider } from "@emotion/react";
 import theme from "../Theme";
+import gsBgImage from '../gs-bg3.jpg';
 
 const Swal = require("sweetalert2");
 
@@ -32,8 +31,6 @@ function Copyright(props) {
     </Typography>
   );
 }
-
-// const defaultTheme = createTheme();
 
 export default function ChangePassword() {
   const token = sessionStorage.getItem("token");
@@ -62,7 +59,6 @@ export default function ChangePassword() {
           focusConfirm: true,
           confirmButtonText: 'OK',
         }).then((result) => {
-          // You can perform additional actions after showing the success message.
           window.location.href = "/Account";
         });
       })
@@ -90,7 +86,7 @@ export default function ChangePassword() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
+            backgroundImage: `url(${gsBgImage})`,
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
