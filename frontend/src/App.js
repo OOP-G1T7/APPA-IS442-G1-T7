@@ -31,6 +31,7 @@ function App() {
             path="/RequestResetPassword"
             element={<RequestResetPassword />}
           />
+          <Route path="/ResetPassword/:uniqueid" element={<ResetPassword />} />
           <Route path="/ChangePassword" element={<ChangePassword />} />
           <Route
             path="/Account"
