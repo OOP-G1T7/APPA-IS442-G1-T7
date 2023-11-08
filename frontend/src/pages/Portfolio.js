@@ -372,6 +372,11 @@ export default function Portfolio() {
         }
     }
 
+
+    function handleClick() {
+        navigate("/Portfolio/"+id+"/Edit");
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <Navbar></Navbar>
@@ -404,7 +409,7 @@ export default function Portfolio() {
                             <Typography variant="h4" gutterBottom>{portfolioData.name}</Typography>
                         </Grid>
                         <Grid item >
-                            <Button variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
+                            <Button onClick={handleClick} variant="outlined" style={{fontWeight: "bold"}}> Edit </Button>
                             <Tooltip title="Delete">
                                 <IconButton onClick={handleOpen}>
                                     <DeleteIcon />
