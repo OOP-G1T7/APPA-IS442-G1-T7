@@ -61,7 +61,7 @@ const options = {
     yaxis: {
         labels: {
             formatter: function (val) {
-                return '$' + (val).toFixed(2);
+                return '$' + (val).toFixed(0);
             },
         },
         title: {
@@ -81,10 +81,50 @@ const options = {
     tooltip: {
         shared: true,
         y: {
-            
+
         },
         x: {
             format: 'dd MMM yyyy',
+        },
+        enabled: true,
+        custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+            const hoverXaxis = w.globals.seriesX[seriesIndex][dataPointIndex];
+            const hoverIndexes = w.globals.seriesX.map(seriesX => {
+            return seriesX.findIndex(xData => xData === hoverXaxis);
+            });
+            
+            let hoverList = '';
+            hoverIndexes.forEach((hoverIndex, seriesEachIndex) => {
+            if (hoverIndex >= 0) {
+                hoverList += `
+                        <div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 1; display: flex;">
+                            <span class="apexcharts-tooltip-marker" style="background-color: ${
+                                w.globals.markers.colors[seriesEachIndex]
+                            };"></span>
+                            <div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+                                <div class="apexcharts-tooltip-y-group" >
+                                    <span class="apexcharts-tooltip-text-y-label">${
+                                        w.globals.seriesNames[seriesEachIndex]
+                                    }: </span>
+                                    <span class="apexcharts-tooltip-text-y-value">$
+                                    ${
+                                        series[seriesEachIndex][hoverIndex].toFixed(2)
+                                    }
+                                    </span>
+                                </div>
+                            </div>
+                        </div>`;
+            }
+            });
+            const formatHoverX = new Date(hoverXaxis).toLocaleString(
+                'en-SG', 
+                { year: 'numeric', month: 'short', day: 'numeric'}
+            );
+            
+    
+            return `<div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+                        ${formatHoverX}
+                    </div>${hoverList}`;
         },
     },
     colors: colours,
@@ -153,6 +193,8 @@ const modalStyle = {
     borderRadius: 2,
 };
 
+const monthlySeriesPeriod = ["10y", "5y", "3y", "1y", "6m"];
+
 export default function Portfolio() {
     const { id } = useParams();
 
@@ -161,58 +203,52 @@ export default function Portfolio() {
     const currUserId = decoded.jti;
     const navigate = useNavigate();
 
-    React.useEffect(() => {
-        getPortfolioData(id);
-        console.log("useEffect");
-    }, [id]);
-
-    const today = new Date();
-
-    const [dataLoaded, setDataLoaded] = React.useState(false);
-    // setTimeout(() => {
-    //     setDataLoaded(true);
-    // }, 2000);
-
     const [portfolioData, setPortfolioData] = React.useState(null);
     const [portfolioStockData, setPortfolioStockData] = React.useState(null);
     const [seriesData, setSeriesData] = React.useState(null);
     const [filteredSeriesData, setFilteredSeriesData] = React.useState(null);
-    const [stockDataType, setStockDataType] = React.useState("monthly");
     const [seriesPeriod, setSeriesPeriod] = React.useState("10y");
 
-    
-    const getData = async (ticker) => {
+    React.useEffect(() => {
+        getPortfolioData(id, "monthly");
+    }, [id]);
+
+    React.useEffect(() => {
+        filterData(seriesPeriod);
+    }, [seriesData]);
+
+    const today = new Date();
+
+    const [dataLoaded, setDataLoaded] = React.useState(false);
+
+    const getData = async (ticker, dataPeriod) => {
         try {
-            const res = await axios.get("/api/stockwrapper/" + stockDataType + "Stock/" + ticker, {
+            const res = await axios.get("/api/stockwrapper/" + dataPeriod + "Stock/" + ticker, {
                 headers: { Authorization: `Bearer ${token}` }
         })
-            // console.log(res.data)
             return res.data
         } catch (error) {
             throw error;
         }
     };
 
-    const getStockData = async (stockList) => {
-        // console.log(stockList)
+    const getStockData = async (stockList, dataPeriod) => {
         let stockDataSeries = [];
         try {
             for (let key in stockList) {
                 const stock = stockList[key];
-                const stockData = await getData(stock.stockPk.ticker).catch((error) => {
+                const stockData = await getData(stock.stockPk.ticker, dataPeriod).catch((error) => {
                     console.log(error)
                     error.message = "API unavailable";
                     console.log("Stockwrapper fail")
                     throw error
                 });
-                // console.log(stockData)
                 const series = {
                     name: stock.stockPk.ticker,
                     data: stockData.data.map((data) =>[new Date(data.date).getTime(), parseFloat(data.close)]).sort((a, b) => a[0] - b[0]),
                 }
                 stockDataSeries.push(series);
             }
-            // console.log(stockDataSeries)
             setSeriesData(stockDataSeries);
         } catch (error) {
             console.log("API unavailable")
@@ -220,7 +256,7 @@ export default function Portfolio() {
         }
     }
 
-    const getPortfolioData = async (portfolioID) => {
+    const getPortfolioData = async (portfolioID, dataPeriod) => {
         try {
             const res = await axios.get("/api/portfolio/" + portfolioID, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -228,22 +264,15 @@ export default function Portfolio() {
                 error.message = "Portfolio not found";
                 throw error
             })
-            // console.log(res.data)
             setPortfolioData(res.data)
             setPortfolioStockData(res.data.stocks)
-            // console.log(portfolioStockData)
-            // if (portfolioStockData !== null) {
-            await getStockData(res.data.stocks);
-            // console.log("stockdata retrived")
-            await filterData("10y");
-            // }
+            await getStockData(res.data.stocks, dataPeriod);
         } catch (error) {
             if (error.message === "Portfolio not found") {
                 setPortfolioData(error.message)
             }
         } finally {
             setDataLoaded(true);
-            console.log(filteredSeriesData)
         }
     };
 
@@ -272,6 +301,7 @@ export default function Portfolio() {
                 break;
         }
 
+
         let newSeriesData = [];
         let startQtyData = {};
         if  (seriesData !== null)  {
@@ -279,21 +309,14 @@ export default function Portfolio() {
                 let newData = seriesData[key].data.filter((data) => 
                     data[0] >= beginningDate.getTime()
                 )
-                // console.log(newData)
                 startQtyData[seriesData[key].name] = portfolioData.capital * portfolioStockData[key].proportion / 100 / newData[0][1];
-                // console.log(portfolioData.capital)
-                // console.log(portfolioStockData[key].proportion / 100)
-                // console.log(portfolioData.capital * portfolioStockData[key].proportion / 100)
-                // console.log(newData[0][1])
 
                 const data = {
                     name: seriesData[key].name,
                     data: newData.map((data) => [data[0], data[1] * startQtyData[seriesData[key].name]]),
                 };
-                // console.log(data);
                 newSeriesData.push(data);
             }
-            // console.log(newSeriesData);
             setFilteredSeriesData(newSeriesData);
         }
     }
@@ -311,22 +334,13 @@ export default function Portfolio() {
         return total.toFixed(2);
     }
 
-    const handleSeriesPeriod = (event, newSeriesPeriod) => {
+    const handleSeriesPeriod = async (event, newSeriesPeriod) => {
+        let dataType = newSeriesPeriod === "1m" ? "daily" : "monthly";
+        let currSeriesPeriod = seriesPeriod;
         setSeriesPeriod(newSeriesPeriod);
-        let dataType = "";
-
-        switch (newSeriesPeriod) {
-            case "1m":
-                dataType = "daily";
-                break;
-            default:
-                dataType = "monthly";
-                break;
-        }
-
-        if (stockDataType !== dataType) {
-            setStockDataType(dataType);
-            getStockData(portfolioStockData);
+        
+        if (monthlySeriesPeriod.includes(currSeriesPeriod) !== monthlySeriesPeriod.includes(newSeriesPeriod)) {
+            await getPortfolioData(id, dataType);
         }
         filterData(newSeriesPeriod);
     };
@@ -351,7 +365,6 @@ export default function Portfolio() {
             , 3000);
 
             setTimeout(() => {
-                // setOpenSuccess(false);
                 navigate("/Home");
             }, 5000);
         } catch (error) {
@@ -383,7 +396,6 @@ export default function Portfolio() {
                     container
                     spacing={3}
                     direction="column"
-                    // alignItems="center"
                     justifyContent="center"
                 >
                     
@@ -438,10 +450,6 @@ export default function Portfolio() {
                                             <Button variant="outlined" onClick={handleClose}>Cancel</Button>
                                         </Grid>
                                         <Grid item>
-                                            {/* <Button variant="contained" onClick={handleDelete}  color="error"disabled={loading}>
-                                                
-                                                Confirm Delete
-                                            </Button> */}
                                             <LoadingButton
                                                 onClick={handleDelete}
                                                 loading={loading}
@@ -502,14 +510,9 @@ export default function Portfolio() {
                                     <Typography variant="h6" style={{textAlign: 'right', width: "100%",}}>No Data</Typography> :
                                     <Chart
                                         options={options}
-                                        // series={series}
                                         series={filteredSeriesData}
                                         type="line"
                                         height="100%"
-                                        // width="500"
-                                        // style={{
-                                        //     minHeight: '25rem',
-                                        // }}
                                     />
                                     
                                 }
@@ -586,7 +589,7 @@ export default function Portfolio() {
                                                 { portfolioStockData === null ? <>Loading...</> :
                                                 portfolioStockData.map((stock, key) => {
                                                     return (
-                                                    <Grid item xxl>
+                                                    <Grid item xxl key={key}>
                                                         <Typography variant="body1">
                                                             <span style={{
                                                                 width: 10,
