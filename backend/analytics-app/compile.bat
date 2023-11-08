@@ -16,7 +16,6 @@ if %errorlevel% neq 0 (
 )
 
 :: Maven commands
-mvn wrapper:wrapper
-mvn compile
+mvn clean compile
 
 endlocal
