@@ -10,10 +10,14 @@ import { ThemeProvider } from '@emotion/react';
 import theme from "../Theme";
 import { useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
+import jwt from "jwt-decode";
 
 
 export default function Navbar() {
     let navigate = useNavigate();
+
+    const token = sessionStorage.getItem("token");
+    const decoded = jwt(token);
 
     // function redirectPortfolio() {
     //     navigate("/Portfolio");
@@ -46,6 +50,12 @@ export default function Navbar() {
                         <Grid item>
                             <Typography><Button onClick={redirectAccount} color='buttonFontColor' style={{ textTransform: 'none' }}>Account</Button></Typography>
                         </Grid>
+                        { decoded.aud === "admin" ?
+                            <Grid item>
+                                <Typography><Button onClick={redirectLogout} color='buttonFontColor' style={{ textTransform: 'none' }}>Audit Logs</Button></Typography>
+                            </Grid> : <></>
+                        }
+                        
                         <Grid item>
                             <Typography><Button onClick={redirectLogout} color='buttonFontColor' style={{ textTransform: 'none' }}>Logout</Button></Typography>
                         </Grid>

@@ -15,6 +15,8 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import Skeleton from '@mui/material/Skeleton';
 import Chip from '@mui/material/Chip';
+import { useNavigate } from "react-router-dom";
+import jwt from "jwt-decode";
 
 export default function AuditLogs() {
 
@@ -22,9 +24,16 @@ export default function AuditLogs() {
         getAuditLogs();
     }, []);
 
+    const navigate = useNavigate();
+
     const [dataList, setDataList] = React.useState([]);
 
     const token = sessionStorage.getItem("token");
+    const decoded = jwt(token);
+
+    if (decoded.aud !== "admin") {
+        navigate("/NoPage");
+    }
 
     const getAuditLogs = async () => {
         const res = await axios.get("/api/logs", {
@@ -91,26 +100,6 @@ export default function AuditLogs() {
                                     </TableRow>
                                 ))}
                                 </TableBody>
-                                {/* <TableFooter>
-                                    <TableRow>
-                                        <TablePagination
-                                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                                        colSpan={5}
-                                        count={testData.length}
-                                        rowsPerPage={rowsPerPage}
-                                        page={page}
-                                        SelectProps={{
-                                            inputProps: {
-                                            'aria-label': 'rows per page',
-                                            },
-                                            native: true,
-                                        }}
-                                        onPageChange={handleChangePage}
-                                        onRowsPerPageChange={handleChangeRowsPerPage}
-                                        ActionsComponent={TablePaginationActions}
-                                        />
-                                    </TableRow>
-                                </TableFooter> */}
                             </Table>
                         </TableContainer>
                     </Grid>
