@@ -17,6 +17,7 @@ import PortfolioCreation from "./pages/PortfolioCreation";
 import ResetPassword from "./pages/ResetPassword";
 import PortfolioEditing from "./pages/PortfolioEditing";
 import RequestResetPassword from "./pages/RequestResetPassword";
+import AuditLogs from "./pages/AuditLogs";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             path="/RequestResetPassword"
             element={<RequestResetPassword />}
           />
+          <Route path="/ResetPassword/:uniqueid" element={<ResetPassword />} />
           <Route path="/ChangePassword" element={<ChangePassword />} />
           <Route
             path="/Account"
@@ -59,6 +61,11 @@ function App() {
           <Route
             path="test-auth"
             element={<RouteGuard element={<TestAuth />} />}
+          />
+          <Route
+            path="/AuditLogs"
+            element={<AuditLogs />}
+            // element={<RouteGuard element={<AuditLogs />} />}
           />
         </Routes>
       </BrowserRouter>
