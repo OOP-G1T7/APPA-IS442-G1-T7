@@ -20,6 +20,8 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Navbar from '../components/Navbar';
 import axios from "axios";
+import jwt from "jwt-decode";
+
 const Swal = require("sweetalert2");
 
 
@@ -53,7 +55,10 @@ export default function Portfolio() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2hhMDkwOTFAZ21haWwuY29tIiwiZXhwIjoxOTEzNzc3Mzg2fQ.PzTcrkdvWVr4DlYwDC0jOS5D--Jm1vVyL7q6dK6dO-I";
-
+        const token = sessionStorage.getItem("token");
+        const decoded = jwt(token);
+        const currUserId = decoded.jti;
+        
         const headers = {
             Authorization: `Bearer ${bearerToken}`
         };
@@ -61,9 +66,9 @@ export default function Portfolio() {
         for (let i = 0; i < selectedTickers.length; i++) {
             totalProportion += selectedTickers[i].proportion;
         }
-        if (totalProportion === 1 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
+        if (totalProportion === 100 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
             axios.post(`/api/portfolio`, {
-                userId: 1,
+                userId: currUserId,
                 name: portfolioName,
                 description: portfolioDescription,
                 capital: portfolioCapital
@@ -97,7 +102,7 @@ export default function Portfolio() {
             let errorsList = '';
 
             if (totalProportion != 1) {
-                errorsList += "<li>Stocks' proportions do not add up to 1</li>";
+                errorsList += "<li>Stocks' proportions do not add up to 100</li>";
             }
             if (portfolioCapital == '') {
                 errorsList += "<li>Portfolio capital empty</li>";

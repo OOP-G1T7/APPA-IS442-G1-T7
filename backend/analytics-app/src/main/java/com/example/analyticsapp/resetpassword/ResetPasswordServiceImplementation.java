@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import com.example.analyticsapp.user.UserEntity;
 
 @Service
-public class ResetPasswordServiceImplementation implements ResetPasswordService{
-    
+public class ResetPasswordServiceImplementation implements ResetPasswordService {
+
     @Autowired
     private ResetPasswordRepository tokenRepository;
 
