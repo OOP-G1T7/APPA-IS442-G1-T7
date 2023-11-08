@@ -22,11 +22,17 @@ import Navbar from '../components/Navbar';
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
+
 const Swal = require("sweetalert2");
 
 
 
 export default function PortfolioEdit() {
+
+    const token = sessionStorage.getItem("token");
+
+
+
     const [selectedEquities, setEquities] = useState([]);
     const [allEquities, setAllEquities] = useState([]);
     const [loadedEquities, setLoadedEquities] = useState([]);
@@ -88,10 +94,9 @@ useEffect(() => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2hhMDkwOTFAZ21haWwuY29tIiwiZXhwIjoxOTEzNzc3Mzg2fQ.PzTcrkdvWVr4DlYwDC0jOS5D--Jm1vVyL7q6dK6dO-I";
 
         const headers = {
-            Authorization: `Bearer ${bearerToken}`
+            Authorization: `Bearer ${token}`
         };
         let errors = [];
         for (let i = 0; i < selectedTickers.length; i++) {
@@ -211,8 +216,6 @@ useEffect(() => {
 
     };
 
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2hhMDkwOTFAZ21haWwuY29tIiwiZXhwIjoxOTE0NzQxMzAyfQ.ON26Ln93QLNjY2xQBJaqXSNCIOEaVR8URuBorxcpujk';
-
     const getData = async () => {
         try {
             const res = await axios.get("/api/stockwrapper/getStockListing", {
@@ -224,20 +227,6 @@ useEffect(() => {
             console.log("API unavailable")
         }
     };
-
-    // const getStockData = async (ticker) => {
-    //     try {
-    //         const res = await axios.get("/api/stockwrapper/" + ticker, {
-    //             headers: { Authorization: `Bearer ${token}` }
-    //     })
-    //         // console.log(res.data)
-    //         return res.data
-    //     } catch (error) {
-    //         console.log("API unavailable")
-    //         setSeriesData([])
-    //     }
-    // };
-    
 
 
     const getPortfolioData = async (portfolioID) => {

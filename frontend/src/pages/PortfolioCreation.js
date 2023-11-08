@@ -26,6 +26,13 @@ const Swal = require("sweetalert2");
 
 
 export default function Portfolio() {
+
+    const token = sessionStorage.getItem("token");
+    const decoded = jwt(token);
+    const currUserId = decoded.jti;
+
+
+
     const [selectedEquities, setEquities] = useState([]);
     const [allEquities, setAllEquities] = useState([]);
     const [loadedEquities, setLoadedEquities] = useState([]);
@@ -54,13 +61,9 @@ export default function Portfolio() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2hhMDkwOTFAZ21haWwuY29tIiwiZXhwIjoxOTEzNzc3Mzg2fQ.PzTcrkdvWVr4DlYwDC0jOS5D--Jm1vVyL7q6dK6dO-I";
-        const token = sessionStorage.getItem("token");
-        const decoded = jwt(token);
-        const currUserId = decoded.jti;
-        
+
         const headers = {
-            Authorization: `Bearer ${bearerToken}`
+            Authorization: `Bearer ${token}`
         };
         let errors = [];
         for (let i = 0; i < selectedTickers.length; i++) {
@@ -127,8 +130,6 @@ export default function Portfolio() {
         }
 
     };
-
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2hhMDkwOTFAZ21haWwuY29tIiwiZXhwIjoxOTE0NzQxMzAyfQ.ON26Ln93QLNjY2xQBJaqXSNCIOEaVR8URuBorxcpujk';
 
     const getData = async () => {
         try {

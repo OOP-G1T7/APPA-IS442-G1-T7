@@ -393,9 +393,9 @@ export default function Portfolio() {
                     <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>{portfolioData}</Typography> : 
                     
                     // Uncomment this to prevent users from accessing other users' portfolios
-                    // portfolioData.userId !== parseInt(currUserId) ?
-                    // <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>You do not have access to this portfolio</Typography>
-                    // :
+                    portfolioData.userId !== parseInt(currUserId) ?
+                    <Typography variant="h4" gutterBottom style={{textAlign: "center", width: "100%"}}>You do not have access to this portfolio</Typography>
+                    :
 
                 <Grid
                     container
