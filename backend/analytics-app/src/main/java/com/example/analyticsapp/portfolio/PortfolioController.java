@@ -54,8 +54,9 @@ public class PortfolioController {
     @PostMapping("/portfolio")
     public ResponseEntity<String> createPortfolio(@RequestBody PortfolioEntity newPortfolioEntity) {
         ResponseEntity<String> response = portfolioService.createPortfolio(newPortfolioEntity);
+        int userId = newPortfolioEntity.getUserId();
         String detail = "Created portfolio with id = " + newPortfolioEntity.getPortfolioId();
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
     }
 
@@ -63,13 +64,14 @@ public class PortfolioController {
     public ResponseEntity<String> addStockToPortfolio(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.addStockToPortfolio(stockDTO, portfolioId);
         String detail = "Added stock comprising of ";
+        int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();  
         for (StockRequestDTO stockRequestDTO : stockDTO) {
             detail += stockRequestDTO.getProportion() + "% " + stockRequestDTO.getTicker() + ", ";
             // detail += stockRequestDTO.getProportion() + " " + stockRequestDTO.getTicker() + ", ";
         }
         detail = detail.substring(0, detail.length() - 2);
         detail += " to portfolio with id = " + portfolioId;
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
         
     }
@@ -77,16 +79,18 @@ public class PortfolioController {
     @PutMapping("/portfolio")
     public ResponseEntity<String> editPortfolio(@RequestBody PortfolioEntity updatedPortfolio) {
         ResponseEntity<String> response = portfolioService.editPortfolio(updatedPortfolio);
+        int userId = updatedPortfolio.getUserId();
         String detail = "Edited portfolio with id = " + updatedPortfolio.getPortfolioId();
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
     }
 
     @DeleteMapping("/portfolio/{portfolioId}")
     public ResponseEntity<String> deletePortfolio(@PathVariable int portfolioId) {
         ResponseEntity<String> response = portfolioService.deletePortfolio(portfolioId);
+        int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();
         String detail = "Deleted portfolio with id = " + portfolioId;
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
     }
 
@@ -95,16 +99,18 @@ public class PortfolioController {
         int portfolioId = portfolioStocks.getPortfolioId();
         ArrayList<String> stockTickers = portfolioStocks.getPortfolioStockTickers();
         ResponseEntity<String> response = stockService.deleteStocksFromPortfolio(portfolioId, stockTickers);
+        int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();
         String detail = "Deleted stock in portfolio with id = " + portfolioId;
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
     }
 
     @PutMapping("/portfolio/stock/{portfolioId}")
     public ResponseEntity<String> editStock(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.editStock(stockDTO, portfolioId);
+        int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();
         String detail = "Edited stock in portfolio with id = " + portfolioId;
-        auditLogService.logAuditEvent(detail, response.getStatusCode());
+        auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
         
     }

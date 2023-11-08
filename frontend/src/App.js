@@ -5,7 +5,6 @@ import "./App.css";
 import RouteGuard from "./util/RouteGuard";
 import TestAuth from "./pages/TestAuth";
 
-import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -17,6 +16,7 @@ import PortfolioCreation from "./pages/PortfolioCreation";
 import ResetPassword from "./pages/ResetPassword";
 import PortfolioEditing from "./pages/PortfolioEditing";
 import RequestResetPassword from "./pages/RequestResetPassword";
+import AuditLogs from "./pages/AuditLogs";
 
 function App() {
   return (
@@ -60,6 +60,10 @@ function App() {
           <Route
             path="test-auth"
             element={<RouteGuard element={<TestAuth />} />}
+          />
+          <Route
+            path="/AuditLogs"
+            element={<RouteGuard element={<AuditLogs />} />}
           />
         </Routes>
       </BrowserRouter>
