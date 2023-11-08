@@ -7,7 +7,6 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import jwt from "jwt-decode";
 import PersonIcon from '@mui/icons-material/Person';
-
 import { ThemeProvider } from "@emotion/react";
 import theme from "../Theme";
 
