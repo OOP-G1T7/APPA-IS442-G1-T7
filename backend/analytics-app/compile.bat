@@ -2,7 +2,7 @@
 setlocal
 
 :: Define the Maven version to use
-set "MAVEN_VERSION=4.0.0"
+set "MAVEN_VERSION=3.9.5"
 
 :: Check if Maven is installed
 where mvn >nul 2>&1
