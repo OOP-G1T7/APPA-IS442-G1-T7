@@ -20,6 +20,8 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Navbar from '../components/Navbar';
 import axios from "axios";
+import jwt from "jwt-decode";
+
 import { useParams } from "react-router-dom";
 
 
@@ -30,6 +32,8 @@ const Swal = require("sweetalert2");
 export default function PortfolioEdit() {
 
     const token = sessionStorage.getItem("token");
+    const decoded = jwt(token);
+    const currUserId = decoded.jti;
 
 
 
@@ -130,7 +134,7 @@ useEffect(() => {
         if (totalProportion === 100 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
             axios.put(`/api/portfolio`, {
                 portfolioId: id,
-                userId: 1,
+                userId: currUserId,
                 name: portfolioName,
                 description: portfolioDescription,
                 capital: portfolioCapital
