@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.analyticsapp.log.AuditLogService;
-
 @Service
 public class PortfolioServiceImplementation implements PortfolioService {
 

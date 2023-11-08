@@ -54,16 +54,21 @@ public class PortfolioController {
     @PostMapping("/portfolio")
     public ResponseEntity<String> createPortfolio(@RequestBody PortfolioEntity newPortfolioEntity) {
         ResponseEntity<String> response = portfolioService.createPortfolio(newPortfolioEntity);
-        String detail = "Created portfolio with id=" + newPortfolioEntity.getPortfolioId();
+        String detail = "Created portfolio with id = " + newPortfolioEntity.getPortfolioId();
         auditLogService.logAuditEvent(detail, response.getStatusCode());
-        return response
+        return response;
     }
 
     @PostMapping("/portfolio/{portfolioId}")
     public ResponseEntity<String> addStockToPortfolio(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.addStockToPortfolio(stockDTO, portfolioId);
-        // String detail = "Added "+ stockDTO.getQuantity() + " " + stockDTO.getTicker() +" stocks to portfolio with id=" + portfolioId;
-        // auditLogService.logAuditEvent(detail, response.getStatusCode());
+        String detail = "Added ";
+        for (StockRequestDTO stockRequestDTO : stockDTO) {
+            detail += stockRequestDTO.getProportion() + " " + stockRequestDTO.getTicker() + ", ";
+        }
+        detail = detail.substring(0, detail.length() - 2);
+        detail += " stocks to portfolio with id = " + portfolioId;
+        auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
         
     }
@@ -71,7 +76,7 @@ public class PortfolioController {
     @PutMapping("/portfolio")
     public ResponseEntity<String> editPortfolio(@RequestBody PortfolioEntity updatedPortfolio) {
         ResponseEntity<String> response = portfolioService.editPortfolio(updatedPortfolio);
-        String detail = "Edited portfolio with id=" + updatedPortfolio.getPortfolioId();
+        String detail = "Edited portfolio with id = " + updatedPortfolio.getPortfolioId();
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
     }
@@ -79,7 +84,7 @@ public class PortfolioController {
     @DeleteMapping("/portfolio/{portfolioId}")
     public ResponseEntity<String> deletePortfolio(@PathVariable int portfolioId) {
         ResponseEntity<String> response = portfolioService.deletePortfolio(portfolioId);
-        String detail = "Deleted portfolio with id=" + portfolioId;
+        String detail = "Deleted portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
     }
@@ -89,7 +94,7 @@ public class PortfolioController {
         int portfolioId = portfolioStocks.getPortfolioId();
         ArrayList<String> stockTickers = portfolioStocks.getPortfolioStockTickers();
         ResponseEntity<String> response = stockService.deleteStocksFromPortfolio(portfolioId, stockTickers);
-        String detail = "Deleted stock in portfolio with id=" + portfolioId;
+        String detail = "Deleted stock in portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
     }
@@ -97,7 +102,7 @@ public class PortfolioController {
     @PutMapping("/portfolio/stock/{portfolioId}")
     public ResponseEntity<String> editStock(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.editStock(stockDTO, portfolioId);
-        String detail = "Edited stock in portfolio with id=" + portfolioId;
+        String detail = "Edited stock in portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
         
