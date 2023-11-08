@@ -62,12 +62,13 @@ public class PortfolioController {
     @PostMapping("/portfolio/{portfolioId}")
     public ResponseEntity<String> addStockToPortfolio(@RequestBody ArrayList<StockRequestDTO> stockDTO, @PathVariable int portfolioId) {
         ResponseEntity<String> response = stockService.addStockToPortfolio(stockDTO, portfolioId);
-        String detail = "Added ";
+        String detail = "Added stock comprising of ";
         for (StockRequestDTO stockRequestDTO : stockDTO) {
-            detail += stockRequestDTO.getProportion() + " " + stockRequestDTO.getTicker() + ", ";
+            detail += stockRequestDTO.getProportion() + "% " + stockRequestDTO.getTicker() + ", ";
+            // detail += stockRequestDTO.getProportion() + " " + stockRequestDTO.getTicker() + ", ";
         }
         detail = detail.substring(0, detail.length() - 2);
-        detail += " stocks to portfolio with id = " + portfolioId;
+        detail += " to portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
         
