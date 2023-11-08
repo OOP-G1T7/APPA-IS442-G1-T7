@@ -7,6 +7,15 @@ public class UserRegisterRequest {
     private String email;
     private String password;
     private String passwordConfirm;
+    private String role = "member";
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public String getEmail() {
         return email;

@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import jwt from "jwt-decode";
+import PersonIcon from '@mui/icons-material/Person';
 
 import { ThemeProvider } from "@emotion/react";
 import theme from "../Theme";
@@ -44,16 +45,21 @@ export default function Account() {
   const decoded = jwt(token);
   return (
     <ThemeProvider theme={theme}>
-      <Container>
-        <Navbar />
-        <Content>
-          <AvatarContainer>
-            <Avatar
-              alt="Profile Pic"
-              src="profile-pic.jpg"
-              sx={{
-                width: "100px",
-                height: "100px",
+    <Container>
+      <Navbar />
+      <Content>
+        <AvatarContainer>
+        <PersonIcon style={{width:"100px",height:"100px"}}/>      
+          
+          <h2>Account Details</h2>
+        </AvatarContainer>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              label="Email"
+              defaultValue={decoded.sub}
+              InputProps={{
+                readOnly: true,
               }}
             />
             <h2>Account Details</h2>
