@@ -12,6 +12,9 @@ public class StockRequestDTO {
     // public void setPortfolio_id(int portfolioId) {
     //     this.portfolioId = portfolioId;
     // }
+
+    
+
     public String getTicker() {
         return ticker;
     }

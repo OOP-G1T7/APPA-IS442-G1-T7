@@ -14,10 +14,10 @@ public class AuditLogServiceImplementation implements AuditLogService {
     private AuditLogRepository auditLogRepository;
 
     @Override
-    public void logAuditEvent(String detail, HttpStatusCode status) {
+    public void logAuditEvent(int userId, String detail, HttpStatusCode status) {
         AuditLog auditLog = new AuditLog();
         // TODO: get user id from session
-        auditLog.setUserId(1);
+        auditLog.setUserId(userId);
         auditLog.setDetail(detail);
         if (status == HttpStatus.OK) {
             auditLog.setOutcome("Success");

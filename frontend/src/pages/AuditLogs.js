@@ -30,6 +30,7 @@ export default function AuditLogs() {
 
     const token = sessionStorage.getItem("token");
     const decoded = jwt(token);
+    console.log(decoded);
 
     if (decoded.aud !== "admin") {
         navigate("/NoPage");
