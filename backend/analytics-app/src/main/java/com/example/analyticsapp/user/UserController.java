@@ -130,11 +130,7 @@ public class UserController {
                 String storedHashedPassword = user.getPassword();
                 String newPassword = changePasswordRequest.getNewPassword();
                 String confirmPassword = changePasswordRequest.getConfirmPassword();
-
-                // Print relevant information for debugging
-                System.out.println("Email: " + changePasswordRequest.getEmail());
-                System.out.println("Stored Hashed Password: " + storedHashedPassword);
-                System.out.println("Input Password: " + changePasswordRequest.getCurrentPassword());
+                
 
                 if (BCrypt.checkpw(inputPassword, storedHashedPassword)) {
                     // Check if the new password matches the confirm password
