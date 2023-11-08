@@ -9,6 +9,7 @@ function TestAuth() {
       <div>TestAuth</div>
       <p>Email: {decoded.sub}</p>
       <p>User ID: {decoded.jti}</p>
+      <p>Role: {decoded.aud}</p>
     </>
   );
 }

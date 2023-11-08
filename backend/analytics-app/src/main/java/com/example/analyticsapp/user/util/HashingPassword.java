@@ -17,6 +17,7 @@ public class HashingPassword {
         String hashedPassword = BCrypt.hashpw(userRequest.getPassword(), salt);
         newUserEntity.setEmail(userRequest.getEmail());
         newUserEntity.setPassword(hashedPassword);
+        newUserEntity.setRole(userRequest.getRole());
 
         return newUserEntity;
     }
