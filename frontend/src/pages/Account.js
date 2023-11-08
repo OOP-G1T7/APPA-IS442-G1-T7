@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import Grid from "@mui/material/Grid";
 import Avatar from "@mui/material/Avatar";
+import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -45,23 +46,12 @@ export default function Account() {
   const decoded = jwt(token);
   return (
     <ThemeProvider theme={theme}>
-    <Container>
-      <Navbar />
-      <Content>
-        <AvatarContainer>
-        <PersonIcon style={{width:"100px",height:"100px"}}/>      
-          
-          <h2>Account Details</h2>
-        </AvatarContainer>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Email"
-              defaultValue={decoded.sub}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
+      <Container>
+        <Navbar />
+        <Content>
+          <AvatarContainer>
+            <PersonIcon style={{ width: "100px", height: "100px" }} />
+
             <h2>Account Details</h2>
           </AvatarContainer>
           <Grid container spacing={2}>
