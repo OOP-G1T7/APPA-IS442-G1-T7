@@ -19,9 +19,10 @@ export default function Navbar() {
     //     navigate("/Portfolio");
     // }
     function redirectHome() {
-        navigate("/Portfolio");
+        navigate("/Home");
     }
     function redirectLogout() {
+        sessionStorage.clear()
         navigate("/SignIn");
     }
     function redirectAccount() {

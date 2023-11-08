@@ -5,6 +5,11 @@ import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
+import jwt from "jwt-decode";
+
+import { ThemeProvider } from "@emotion/react";
+import theme from "../Theme";
+
 
 const Container = styled("div")(({ theme }) => ({
   background: `linear-gradient(to bottom, ${
@@ -38,7 +43,10 @@ const AvatarContainer = styled("div")({
 });
 
 export default function Account() {
+  const token = sessionStorage.getItem("token");
+  const decoded = jwt(token);
   return (
+    <ThemeProvider theme={theme}>
     <Container>
       <Navbar />
       <Content>
@@ -54,30 +62,10 @@ export default function Account() {
           <h2>Account Details</h2>
         </AvatarContainer>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="First Name"
-              defaultValue="Jennifer"
-              InputProps={{
-                readOnly: true,
-              }}
-              sx={{ width: "100%", marginBottom: 2 }}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Last Name"
-              defaultValue="Williams"
-              InputProps={{
-                readOnly: true,
-              }}
-              sx={{ width: "100%", marginBottom: 2 }}
-            />
-          </Grid>
           <Grid item xs={12}>
             <TextField
               label="Email"
-              defaultValue="jenniferwilliams89@gmail.com"
+              defaultValue={decoded.sub}
               InputProps={{
                 readOnly: true,
               }}
@@ -96,5 +84,6 @@ export default function Account() {
         </Grid>
       </Content>
     </Container>
+    </ThemeProvider>
   );
 }
