@@ -17,8 +17,8 @@ if %errorlevel% neq 0 (
         echo wget failed. Downloading with PowerShell...
         powershell -Command "Invoke-WebRequest -Uri 'https://archive.apache.org/dist/maven/maven-3/%MAVEN_VERSION%/binaries/apache-maven-%MAVEN_VERSION%-bin.zip' -OutFile '%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip'"
 
-        :: Extract the downloaded Maven distribution using PowerShell
-        powershell -Command "Expand-Archive -Path '%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip' -DestinationPath '%TEMP%'"
+        :: Extract the downloaded Maven distribution using PowerShell with -Force
+        powershell -Command "Expand-Archive -Path '%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip' -DestinationPath '%TEMP%' -Force"
         
         set "MAVEN_HOME=%TEMP%\apache-maven-%MAVEN_VERSION%"
         set "PATH=%MAVEN_HOME%\bin;%PATH%"
