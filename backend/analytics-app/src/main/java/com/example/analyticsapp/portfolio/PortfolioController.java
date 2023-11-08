@@ -65,13 +65,11 @@ public class PortfolioController {
         String detail = "Added stock comprising of ";
         for (StockRequestDTO stockRequestDTO : stockDTO) {
             detail += stockRequestDTO.getProportion() + "% " + stockRequestDTO.getTicker() + ", ";
-            // detail += stockRequestDTO.getProportion() + " " + stockRequestDTO.getTicker() + ", ";
         }
         detail = detail.substring(0, detail.length() - 2);
         detail += " to portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(detail, response.getStatusCode());
         return response;
-        
     }
 
     @PutMapping("/portfolio")

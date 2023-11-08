@@ -1,7 +1,6 @@
 package com.example.analyticsapp.portfolio;
 
 import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 

@@ -1,7 +1,6 @@
 package com.example.analyticsapp.portfolio;
 
 import java.util.ArrayList;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +28,8 @@ public class StockServiceImplementation implements StockService {
 
         for (StockRequestDTO stock : stockDTO) {
             StockEntity stockEntity = new StockEntity();
-            StockPK stockPk = new StockPK();
 
+            StockPK stockPk = new StockPK();
             stockPk.setPortfolioId(portfolioId);
             stockPk.setTicker(stock.getTicker());
             stockEntity.setStockPk(stockPk);
@@ -39,7 +38,6 @@ public class StockServiceImplementation implements StockService {
             portfolio.addStock(stockEntity);
             stockRepo.save(stockEntity);
         }
-
             response.put("message", "Stocks added successfully");
             return new ResponseEntity<>(response.toString(), HttpStatus.OK);
             
@@ -64,7 +62,6 @@ public class StockServiceImplementation implements StockService {
         }
         response.put("message", "Stocks could not be deleted from portfolio");
         return new ResponseEntity<>(response.toString(), HttpStatus.NOT_FOUND);
-
     }
 
     @Override
@@ -92,17 +89,5 @@ public class StockServiceImplementation implements StockService {
             return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
         }
 
-        // try {
-        //     StockEntity stock = stockRepo.getOneStock(portfolioId, stockDTO.getTicker());
-        //     stock.setProportion(stockDTO.getProportion());
-        //     stockRepo.save(stock);
-
-        //     response.put("message", "Stock edited successfully");
-        //     return new ResponseEntity<>(response.toString(), HttpStatus.OK);
-
-        // } catch (Exception e) {
-        //     response.put("message", "Failed to update stock");
-        //     return new ResponseEntity<>(response.toString(), HttpStatus.BAD_GATEWAY);
-        // }
     }
 }
