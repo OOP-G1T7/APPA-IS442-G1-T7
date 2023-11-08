@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatusCode;
 
 public interface AuditLogService {
 
-    void logAuditEvent(String detail, HttpStatusCode status);
+    void logAuditEvent(int userId, String detail, HttpStatusCode status);
 
     ArrayList<AuditLog> retrieveAllLogs();
 

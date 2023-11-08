@@ -21,21 +21,15 @@ import TableBody from '@mui/material/TableBody';
 import Navbar from '../components/Navbar';
 import axios from "axios";
 import jwt from "jwt-decode";
-
 import { useParams } from "react-router-dom";
 
-
 const Swal = require("sweetalert2");
-
-
 
 export default function PortfolioEdit() {
 
     const token = sessionStorage.getItem("token");
     const decoded = jwt(token);
     const currUserId = decoded.jti;
-
-
 
     const [selectedEquities, setEquities] = useState([]);
     const [allEquities, setAllEquities] = useState([]);
@@ -47,7 +41,6 @@ export default function PortfolioEdit() {
     const [portfolioCapital, setPortfolioCapital] = useState('');
     const [portfolioData, setPortfolioData] = React.useState(null);
     const [proportions, setProportions] = useState({});
-
 
     const { id } = useParams();
 
@@ -241,9 +234,8 @@ export default function PortfolioEdit() {
                 error.message = "Portfolio not found";
                 throw error
             })
-            // console.log(res.data)
+
             setPortfolioData(res.data)
-            // setPortfolioStockData(res.data.stocks)
             setPortfolioDescription(res.data.description)
             setPortfolioName(res.data.name)
             setPortfolioCapital(res.data.capital)
@@ -266,7 +258,6 @@ export default function PortfolioEdit() {
                 setPortfolioData(error.message)
             } else if (error.message === "API unavailable") {
                 console.log("API unavailable")
-                // setSeriesData([])
             }
         }
 
@@ -284,24 +275,6 @@ export default function PortfolioEdit() {
         if (!existingObject) {
             updatedArray.push({ ticker: tickerObj.ticker, proportion: parseFloat(tickerObj.proportion) });
         }
-
-        // // tickers to delete
-        // const tickersToDelete = initialTickers.filter(initialTicker =>
-        //     selectedTickers.some(selectedTicker => selectedTicker.ticker === initialTicker.ticker)
-        //   ).map(ticker => ticker.ticker);
-
-        // console.log("initial: ")
-        // console.log(initialTickers)
-        // console.log("deleted: ")
-        // console.log(tickersToDelete)
-
-        // // tickers to add
-        // const tickersToAdd = selectedTickers.filter(newTicker =>
-        //     !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
-        //   );
-
-        // console.log("added:")
-        // console.log(tickersToAdd)
 
         const selectedSymbols = selectedEquities.map(equity => equity.symbol);
         const filteredArray = updatedArray.filter(item => selectedSymbols.includes(item.ticker));
