@@ -15,23 +15,22 @@ if %errorlevel% neq 0 (
     if %errorlevel% neq 0 (
         :: If wget fails, download Maven using PowerShell
         echo wget failed. Downloading with PowerShell...
-        @REM powershell -Command "Invoke-WebRequest -Uri 'https://archive.apache.org/dist/maven/maven-3/%MAVEN_VERSION%/binaries/apache-maven-%MAVEN_VERSION%-bin.zip' -OutFile '%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip'"
         powershell -Command "(New-Object Net.WebClient).DownloadFile('https://archive.apache.org/dist/maven/maven-3/%MAVEN_VERSION%/binaries/apache-maven-%MAVEN_VERSION%-bin.zip', '%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip')"
 
         :: Extract the downloaded Maven distribution using PowerShell with -Force
         powershell -Command "Expand-Archive -Path '%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip' -DestinationPath '%TEMP%' -Force"
         
-        :: Extract the downloaded Maven distribution using PowerShell
+        :: Set up Maven environment using PowerShell
         set "MAVEN_HOME=%TEMP%\apache-maven-%MAVEN_VERSION%"
         set "PATH=%MAVEN_HOME%\bin;%PATH%"
-
-    ) else {
-        :: Extract the downloaded Maven distribution
+    ) else (
+        :: Extract the downloaded Maven distribution using tar (GNU Tar for Windows)
         tar.exe -xf "%TEMP%\apache-maven-%MAVEN_VERSION%-bin.zip" -C "%TEMP%"
         
+        :: Set up Maven environment using tar
         set "MAVEN_HOME=%TEMP%\apache-maven-%MAVEN_VERSION%"
         set "PATH=%MAVEN_HOME%\bin;%PATH%"
-    }
+    )
 )
 
 :: Maven commands

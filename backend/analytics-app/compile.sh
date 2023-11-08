@@ -6,12 +6,9 @@ MAVEN_VERSION="3.9.5"
 # Check if Maven is installed
 if ! command -v mvn &> /dev/null
 then
-    # If Maven is not installed, download and install it
-    echo "Maven is not installed. Installing..."
-    wget "https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.zip" -O "/tmp/apache-maven-$MAVEN_VERSION-bin.zip"
-    unzip "/tmp/apache-maven-$MAVEN_VERSION-bin.zip" -d "/tmp"
-    export MAVEN_HOME="/tmp/apache-maven-$MAVEN_VERSION"
-    export PATH="$MAVEN_HOME/bin:$PATH"
+    # If Maven is not installed, use Homebrew to install it
+    echo "Maven is not installed. Installing Maven with Homebrew..."
+    brew install maven
 fi
 
 # Maven commands
