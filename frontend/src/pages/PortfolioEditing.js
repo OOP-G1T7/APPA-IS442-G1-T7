@@ -45,28 +45,28 @@ export default function PortfolioEdit() {
     const { id } = useParams();
 
     useEffect(() => {
-  getPortfolioData(id);
-}, [id]);
+        getPortfolioData(id);
+    }, [id]);
 
-useEffect(() => {
-    if (portfolioData) {
-      console.log(portfolioData);
-      getData();
+    useEffect(() => {
+        if (portfolioData) {
+            console.log(portfolioData);
+            getData();
+            //   console.log(allEquities);
+        }
+    }, [portfolioData]);
 
-    }
-  }, [portfolioData]);
+    useEffect(() => {
+        if (portfolioData && allEquities) {
+            const selected = portfolioData.stocks.map(stock => {
+                const equity = allEquities.find(equity => equity.symbol === stock.stockPk.ticker);
+                return equity ? { ...equity, proportion: stock.proportion } : 0;
+            }).filter(Boolean);
 
-useEffect(() => {
-    if (portfolioData && allEquities) {
-        const selected = portfolioData.stocks.map(stock => {
-            const equity = allEquities.find(equity => equity.symbol === stock.stockPk.ticker);
-            return equity ? { ...equity, proportion: stock.proportion } : 0;
-        }).filter(Boolean);
-        
-        setEquities(selected);
-    setProportions(selected.reduce((acc, equity) => ({ ...acc, [equity.symbol]: equity.proportion }), {}));
-    }
-}, [portfolioData, allEquities]);
+            setEquities(selected);
+            setProportions(selected.reduce((acc, equity) => ({ ...acc, [equity.symbol]: equity.proportion }), {}));
+        }
+    }, [portfolioData, allEquities]);
 
 
     let totalProportion = 0;
@@ -99,8 +99,30 @@ useEffect(() => {
         for (let i = 0; i < selectedTickers.length; i++) {
             totalProportion += selectedTickers[i].proportion;
             console.log(selectedTickers[i]);
-            
+
         }
+
+        // const tickersToDelete = initialTickers.filter(initialTicker =>
+        //     !selectedTickers.some(selectedTicker => selectedTicker.ticker === initialTicker.ticker)
+        //   ).map(ticker => ticker.ticker);
+
+        // console.log("initial: ")
+        // console.log(initialTickers)
+
+        // console.log("selected: ")
+        // console.log(selectedTickers)
+
+        // console.log("deleted: ")
+        // console.log(tickersToDelete)
+
+        // // Find tickers that are in selectedTickers but not in initialTickers
+        // const tickersToAdd = selectedTickers.filter(newTicker =>
+        //     !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
+        //   );
+
+        // console.log("added:")
+        // console.log(tickersToAdd)
+
 
         if (totalProportion === 100 && portfolioCapital != '' && portfolioDescription != '' && portfolioName != '' && selectedTickers.length != 0) {
             axios.put(`/api/portfolio`, {
@@ -112,40 +134,45 @@ useEffect(() => {
             }, { headers })
                 .then(res => {
                     console.log(res);
-                    
-                        // Find tickers that are in initialTickers but not in selectedTickers
-                        const tickersToDelete = initialTickers.filter(initialTicker =>
-                            !selectedTickers.some(selectedTicker => selectedTicker.ticker === initialTicker.ticker)
-                          ).map(ticker => ticker.ticker);
 
-                        axios.delete(`/api/portfolio/stocks`, {
-                            data: {
-                              portfolioId: id,
-                              stockTickers: tickersToDelete,
-                            },
-                            headers: headers
-                          })
+                    // Find tickers that are in initialTickers but not in selectedTickers
+                    const tickersToDelete = initialTickers.filter(initialTicker =>
+                        !selectedTickers.some(selectedTicker => selectedTicker.ticker === initialTicker.ticker)
+                    ).map(ticker => ticker.ticker);
 
-                          .then(res => {                            
-                                // Find tickers that are in selectedTickers but not in initialTickers
-                                const tickersToAdd = selectedTickers.filter(newTicker =>
-                                    !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
-                                  );
-                     
-                                axios.post(`/api/portfolio/${id}`, tickersToAdd, { headers })
-
-                            .then(() => {
-                                axios.put(`/api/portfolio/stock/${id}`, selectedTickers, { headers })
-                                    .then(res => {
-                                        console.log(res);
-                                        window.location.href = `/Portfolio/${id}`;
-                                    })
-                                    .catch(err => console.log(err));
-                            })
-                            .catch(err => console.log(err));
+                    axios.delete(`/api/portfolio/stocks`, {
+                        data: {
+                            portfolioId: id,
+                            stockTickers: tickersToDelete,
+                        },
+                        headers: headers
                     })
-                    .catch(err => console.log(err));
-                    
+
+                        .then(res => {
+                            console.log(res);
+
+                            // Find tickers that are in selectedTickers but not in initialTickers
+                            const tickersToAdd = selectedTickers.filter(newTicker =>
+                                !initialTickers.some(initialTicker => newTicker.ticker === initialTicker.ticker)
+                            );
+
+
+                            console.log(selectedTickers)
+
+                            axios.post(`/api/portfolio/${id}`, tickersToAdd, { headers })
+
+                                .then(() => {
+                                    axios.put(`/api/portfolio/stock/${id}`, selectedTickers, { headers })
+                                        .then(res => {
+                                            console.log(res);
+                                            window.location.href = `/Portfolio/${id}`;
+                                        })
+                                        .catch(err => console.log(err));
+                                })
+                                .catch(err => console.log(err));
+                        })
+                        .catch(err => console.log(err));
+
                 })
                 .catch(err => {
                     console.log(err);
@@ -225,7 +252,7 @@ useEffect(() => {
                 }
             }))
 
-            
+
         } catch (error) {
             if (error.message === "Portfolio not found") {
                 setPortfolioData(error.message)
@@ -233,7 +260,7 @@ useEffect(() => {
                 console.log("API unavailable")
             }
         }
-        
+
     };
 
     const handleTickers = (tickerObj) => {
@@ -251,11 +278,16 @@ useEffect(() => {
 
         const selectedSymbols = selectedEquities.map(equity => equity.symbol);
         const filteredArray = updatedArray.filter(item => selectedSymbols.includes(item.ticker));
-        
+
         console.log("filtered: ");
         console.log(filteredArray);
         setSelectedTickers(filteredArray);
     }
+
+
+
+
+
 
     return (
         <>
@@ -274,11 +306,11 @@ useEffect(() => {
                             <Grid item minHeight={100} container spacing={2} justifyContent="space-between">
                                 <Grid item xs={6}>
                                     <Typography>Portfolio Name</Typography>
-                                    <TextField id="outlined-basic" variant="outlined" style={{ width: "80%" }} onChange={(event) => setPortfolioName(event.target.value)} value={portfolioName}/>
+                                    <TextField id="outlined-basic" variant="outlined" style={{ width: "80%" }} onChange={(event) => setPortfolioName(event.target.value)} value={portfolioName} />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Typography>Capital</Typography>
-                                    <TextField id="outlined-basic" variant="outlined" style={{ width: "80%" }} type="number" onChange={(event) => setPortfolioCapital(event.target.value)} value={portfolioCapital}/>
+                                    <TextField id="outlined-basic" variant="outlined" style={{ width: "80%" }} type="number" onChange={(event) => setPortfolioCapital(event.target.value)} value={portfolioCapital} />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Typography>Add stocks to portfolio</Typography>
@@ -286,7 +318,7 @@ useEffect(() => {
                                         onInputChange={(event, value) => handleAutocompleteSearch(event, value)}
                                         onChange={(event, value) => handleChange(event, value)}
                                         value={selectedEquities}
-                                        isOptionEqualToValue={(option, selectedEquities)=> option.symbol === selectedEquities.symbol}
+                                        isOptionEqualToValue={(option, selectedEquities) => option.symbol === selectedEquities.symbol}
                                         multiple
                                         popupIcon={<SearchIcon />}
                                         id="checkboxes-tags-demo"
@@ -301,20 +333,32 @@ useEffect(() => {
                                         style={{ width: "80%" }}
                                         getOptionLabel={(option) => `${option.symbol} (${option.name})`}
                                         renderOption={(props, option, { selected }) => {
-                                            
+                                            // console.log(selected)
+                                            // console.log(selectedEquities)
+                                            // if (selectedEquities.includes(
+                                            //     {
+                                            //         symbol: option.symbol,
+                                            //         name: option.name
+                                            //     }
+                                            // )) {
+                                            //     console.log("include")
+                                            //     selected = true;
+                                            // }
+
                                             return (
-                                            <li {...props}>
-                                                <Checkbox
-                                                    icon={icon}
-                                                    checkedIcon={checkedIcon}
-                                                    style={{ marginRight: 8 }}
-                                                    checked={selected}
-                                                    value={selectedEquities.some(equity => equity.symbol === option.symbol)}
-                                                    
-                                                />
-                                                {option.symbol} {option.name}
-                                            </li>
-                                        )}}
+                                                <li {...props}>
+                                                    <Checkbox
+                                                        icon={icon}
+                                                        checkedIcon={checkedIcon}
+                                                        style={{ marginRight: 8 }}
+                                                        checked={selected}
+                                                        value={selectedEquities.some(equity => equity.symbol === option.symbol)}
+
+                                                    />
+                                                    {option.symbol} {option.name}
+                                                </li>
+                                            )
+                                        }}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                 </Grid>
@@ -345,7 +389,7 @@ useEffect(() => {
                                                                 <TableCell><b>{equity.name}</b></TableCell>
                                                                 <TableCell><TextField
                                                                     step=".01"
-                                                                    label="Proportion"
+                                                                    label="Proportion (in %)"
                                                                     id={equity.symbol}
                                                                     onChange={(event) => {
                                                                         setProportions({ ...proportions, [event.target.id]: event.target.value });

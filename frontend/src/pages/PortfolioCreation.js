@@ -14,7 +14,6 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
@@ -65,7 +64,6 @@ export default function Portfolio() {
         const headers = {
             Authorization: `Bearer ${token}`
         };
-        let errors = [];
         for (let i = 0; i < selectedTickers.length; i++) {
             totalProportion += selectedTickers[i].proportion;
         }
@@ -248,7 +246,7 @@ export default function Portfolio() {
                                                                 <TableCell><b>{equity.name}</b></TableCell>
                                                                 <TableCell><TextField
                                                                     step=".01"
-                                                                    label="Proportion"
+                                                                    label="Proportion (in %)"
                                                                     id={equity.symbol}
                                                                     onChange={(event) =>
                                                                         handleTickers({ ticker: event.target.id, proportion: event.target.value })
