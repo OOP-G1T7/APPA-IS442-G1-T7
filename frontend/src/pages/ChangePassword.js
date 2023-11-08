@@ -11,10 +11,11 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import { grey } from '@mui/material/colors';
 import jwt from "jwt-decode";
+import { ThemeProvider } from "@emotion/react";
+import theme from "../Theme";
 
 const Swal = require("sweetalert2");
 
@@ -32,7 +33,7 @@ function Copyright(props) {
   );
 }
 
-const defaultTheme = createTheme();
+// const defaultTheme = createTheme();
 
 export default function ChangePassword() {
   const token = sessionStorage.getItem("token");
@@ -80,7 +81,7 @@ export default function ChangePassword() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         <Grid

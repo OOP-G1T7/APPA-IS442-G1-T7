@@ -7,6 +7,10 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import jwt from "jwt-decode";
 
+import { ThemeProvider } from "@emotion/react";
+import theme from "../Theme";
+
+
 const Container = styled("div")(({ theme }) => ({
   background: `linear-gradient(to bottom, ${
     theme.palette.mode === "dark" ? "#1A2027" : "#fff"
@@ -42,6 +46,7 @@ export default function Account() {
   const token = sessionStorage.getItem("token");
   const decoded = jwt(token);
   return (
+    <ThemeProvider theme={theme}>
     <Container>
       <Navbar />
       <Content>
@@ -79,5 +84,6 @@ export default function Account() {
         </Grid>
       </Content>
     </Container>
+    </ThemeProvider>
   );
 }
