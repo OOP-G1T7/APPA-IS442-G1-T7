@@ -570,7 +570,7 @@ export default function Portfolio() {
                                                             return { 
                                                                 id: key,
                                                                 value: stock.proportion,
-                                                                label: stock.stockPk.ticker,
+                                                                label: `${stock.stockPk.ticker} (%)`,
                                                             }
                                                         })
                                                         },
