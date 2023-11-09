@@ -44,7 +44,23 @@ export default function SignUpSide() {
       passwordConfirm:data.get("passwordConfirm")
     };
 
-    console.log(userRequest);
+    if (userRequest.password !== userRequest.passwordConfirm) {
+      setPasswordMatchError(true);
+    } else {
+      setPasswordMatchError(false);
+    }
+
+    if (
+      !userRequest.password.match(
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,25}$/
+      )
+    ) {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+
+    // console.log(userRequest);
 
     axios
       .post(`http://localhost:8080/api/user/register`, userRequest)
@@ -69,20 +85,23 @@ export default function SignUpSide() {
       .catch(function (error) {
         if (error.response) {
           // The server responded with an error
-          const errorMessage = error.response.data.message;
-          console.log(errorMessage);
+          // const errorMessage = error.response.data.message;
+          // console.log(errorMessage);
     
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: errorMessage,
+            text: !passwordError && !passwordMatchError ? "Account with this email exists" :"Please enter a valid password",
           });
         } else {
           // Network error or something went wrong with the request
-          console.log(error.message);
+          // console.log(error.message);
         }
       });
   };
+
+  const [passwordError, setPasswordError] = React.useState(false);
+  const [passwordMatchError, setPasswordMatchError] = React.useState(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -138,6 +157,8 @@ export default function SignUpSide() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                error={passwordError}
+                helperText={passwordError ? "Password must have 8-25 characters, at least one uppercase letter, one lowercase letter, one number and one special character" : ""}
               />
               <TextField
                 margin="normal"
@@ -148,6 +169,8 @@ export default function SignUpSide() {
                 type="password"
                 id="passwordConfirm"
                 autoComplete="passwordConfirm"
+                error={passwordMatchError}
+                helperText={passwordMatchError ? "Passwords do not match" : ""}
               />
               
               <Button
