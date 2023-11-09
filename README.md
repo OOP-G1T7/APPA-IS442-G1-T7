@@ -17,6 +17,13 @@ Proceed with installation depending on your Maven setup:
 
 <br />
 
+### Compiling the Java Files:
+
+Run `cd backend\analytics-app` where the files `compile.sh` and `compile.bat` exists.
+
+If you are on `Windows`, run `compile.bat`.
+If you are on `Mac`, run `compile.sh`.
+
 ### With Maven extension in IDE:
 
 #### 2. Backend Setup
