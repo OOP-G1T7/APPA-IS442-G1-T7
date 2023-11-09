@@ -87,8 +87,8 @@ public class PortfolioController {
 
     @DeleteMapping("/portfolio/{portfolioId}")
     public ResponseEntity<String> deletePortfolio(@PathVariable int portfolioId) {
-        ResponseEntity<String> response = portfolioService.deletePortfolio(portfolioId);
         int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();
+        ResponseEntity<String> response = portfolioService.deletePortfolio(portfolioId);
         String detail = "Deleted portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
@@ -97,9 +97,9 @@ public class PortfolioController {
     @DeleteMapping("/portfolio/stocks")
     public ResponseEntity<String> deleteStocksFromPortfolio(@RequestBody StockPortfolio portfolioStocks) {
         int portfolioId = portfolioStocks.getPortfolioId();
+        int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();
         ArrayList<String> stockTickers = portfolioStocks.getPortfolioStockTickers();
         ResponseEntity<String> response = stockService.deleteStocksFromPortfolio(portfolioId, stockTickers);
-        int userId = portfolioService.retrievePortfolio(portfolioId).getUserId();
         String detail = "Deleted stock in portfolio with id = " + portfolioId;
         auditLogService.logAuditEvent(userId, detail, response.getStatusCode());
         return response;
