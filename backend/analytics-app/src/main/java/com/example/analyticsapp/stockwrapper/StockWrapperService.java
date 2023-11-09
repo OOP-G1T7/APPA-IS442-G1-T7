@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class StockWrapperService {
@@ -201,7 +202,14 @@ public class StockWrapperService {
     public List<Map<String, String>> getStockListing() throws Exception {
         List<Map<String, String>> result = new ArrayList<>();
 
-        String fileName = "backend/data/stockListing.csv";
+        String plannedPath = "backend";
+        File plannedPathDir = new File(plannedPath);
+
+        if (!plannedPathDir.exists()) {
+            plannedPath = "..";
+        }
+
+        String fileName = plannedPath + "/data/stockListing.csv";
         File csvFile = new File(fileName);
 
         if (!csvFile.exists()) {
