@@ -557,7 +557,7 @@ export default function Portfolio() {
                                             </Grid>
                                             <Grid item style={{margin: 10}} xs={12}/>
                                             <Grid item style={{margin: 10}} xs={12}>
-                                                <Typography variant="h5" style={{fontWeight: 'bold', textAlign: "center"}}>Quantity</Typography>
+                                                <Typography variant="h5" style={{fontWeight: 'bold', textAlign: "center"}}>Proportion</Typography>
                                             </Grid>
                                             <Grid item xs={12} sm={6} md={12}>
                                                 <PieChart
